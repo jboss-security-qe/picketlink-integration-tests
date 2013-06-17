@@ -25,12 +25,15 @@ import java.io.File;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.TargetsContainer;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.shrinkwrap.api.ArchivePaths;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.runner.RunWith;
-import org.picketlink.test.integration.util.PicketLinkIntegrationTests;
-import org.picketlink.test.integration.util.TargetContainers;
+import org.picketlink.test.integration.util.serversetuptasks.IDPSecurityDomainServerSetupTask.PicketlinkStsDomain;
+import org.picketlink.test.integration.util.serversetuptasks.IDPSecurityDomainServerSetupTask.StsDomain;
 
 /**
  * A Simple WS Test for POJO WS Authorization using PicketLink
@@ -38,8 +41,8 @@ import org.picketlink.test.integration.util.TargetContainers;
  * @author Anil Saldhana
  * @since Oct 3, 2010
  */
-@RunWith(PicketLinkIntegrationTests.class)
-@TargetContainers({"jbas7", "eap6"})
+@RunWith(Arquillian.class)
+@ServerSetup({ StsDomain.class, PicketlinkStsDomain.class })
 public class POJOWSAuthorizationAS7TestCase extends AbstractPOJOWSAuthorizationTestCase {
 
     @Deployment(name = "pojo-test", testable = false)
@@ -60,5 +63,7 @@ public class POJOWSAuthorizationAS7TestCase extends AbstractPOJOWSAuthorizationT
 
         return archive;
     }
+    
+    
 
 }

@@ -3,9 +3,7 @@ package org.picketlink.test.integration.util.serversetuptasks;
 import java.util.HashMap;
 import java.util.Map;
 
-//import org.jboss.security.SecurityDomain;
-
-public class IDPSecurityDomainServerSetupTask /*extends AbstractSecurityDomainsServerSetupTask*/{
+public class IDPSecurityDomainServerSetupTask {
 	
 	private static final String IDP = "idp";
 	private static final String PICKETLINK_STS = "picketlink-sts";
@@ -70,11 +68,6 @@ public class IDPSecurityDomainServerSetupTask /*extends AbstractSecurityDomainsS
         return sts;
 	}
 
-	//@Override
-	//protected SecurityDomain[] getSecurityDomains() throws Exception {
-	//        return new SecurityDomain[] { IDP_DOMAIN, PICKETLINK_STS_DOMAIN, SP_DOMAIN, AUTHENTICATOR_DOMAIN, STS_DOMAIN };
-	//}
-	
 	public static class IdpDomain extends AbstractSecurityDomainsServerSetupTask {
 		protected SecurityDomain[] getSecurityDomains() throws Exception {
 			return new SecurityDomain[] { IDP_DOMAIN };

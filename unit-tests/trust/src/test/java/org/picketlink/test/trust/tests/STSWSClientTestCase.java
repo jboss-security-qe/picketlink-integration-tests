@@ -28,9 +28,11 @@ import org.jboss.arquillian.container.test.api.TargetsContainer;
 import org.jboss.shrinkwrap.api.ArchivePaths;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.junit.runner.RunWith;
 import org.picketlink.identity.federation.core.exceptions.ConfigurationException;
 import org.picketlink.identity.federation.core.exceptions.ParsingException;
 import org.picketlink.identity.federation.core.exceptions.ProcessingException;
+import org.picketlink.test.integration.util.PicketLinkIntegrationTests;
 import org.picketlink.test.integration.util.TargetContainers;
 
 /**
@@ -41,6 +43,7 @@ import org.picketlink.test.integration.util.TargetContainers;
  * @since Oct 3, 2010
  */
 @TargetContainers ({"jbas5", "eap5"})
+@RunWith(PicketLinkIntegrationTests.class)
 public class STSWSClientTestCase extends AbstractSTSWSClientTestCase {
     
     @Deployment(name = "ws-testbean", testable = false)

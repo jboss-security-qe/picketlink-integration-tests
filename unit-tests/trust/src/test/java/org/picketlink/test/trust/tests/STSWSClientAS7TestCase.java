@@ -25,10 +25,15 @@ import java.io.File;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.TargetsContainer;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.shrinkwrap.api.ArchivePaths;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.picketlink.test.integration.util.TargetContainers;
+import org.junit.runner.RunWith;
+import org.picketlink.test.integration.util.serversetuptasks.IDPSecurityDomainServerSetupTask.PicketlinkStsDomain;
+import org.picketlink.test.integration.util.serversetuptasks.IDPSecurityDomainServerSetupTask.StsDomain;
 
 /**
  * A Simple WS Test for the SAML Profile of WSS
@@ -37,7 +42,8 @@ import org.picketlink.test.integration.util.TargetContainers;
  * @author Anil Saldhana
  * @since Oct 3, 2010
  */
-@TargetContainers ({"jbas7", "eap6"})
+@RunWith(Arquillian.class)
+@ServerSetup({ StsDomain.class, PicketlinkStsDomain.class })
 public class STSWSClientAS7TestCase extends AbstractSTSWSClientTestCase {
     
     @Deployment(name = "ws-testbean", testable = false)
@@ -54,7 +60,7 @@ public class STSWSClientAS7TestCase extends AbstractSTSWSClientTestCase {
         archive.addAsResource(new File("../../unit-tests/trust/target/test-classes/props/sts-config.properties"), ArchivePaths.create("sts-config.properties"));
 
         archive.addClass(org.picketlink.test.trust.ws.WSTest.class);
-        
+
         return archive;
     }
     

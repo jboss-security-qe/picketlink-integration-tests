@@ -25,13 +25,14 @@ import java.io.File;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.TargetsContainer;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.shrinkwrap.api.ArchivePaths;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.runner.RunWith;
 import org.picketlink.identity.federation.bindings.tomcat.PicketLinkAuthenticator;
-import org.picketlink.test.integration.util.PicketLinkIntegrationTests;
-import org.picketlink.test.integration.util.TargetContainers;
+import org.picketlink.test.integration.util.serversetuptasks.IDPSecurityDomainServerSetupTask.AuthenticatorDomain;
 
 /**
  * Test the {@link PicketLinkAuthenticator}
@@ -39,8 +40,8 @@ import org.picketlink.test.integration.util.TargetContainers;
  * @author Anil.Saldhana@redhat.com
  * @since Sep 13, 2011
  */
-@RunWith(PicketLinkIntegrationTests.class)
-@TargetContainers ({"jbas7", "eap6"})
+@RunWith(Arquillian.class)
+@ServerSetup({ AuthenticatorDomain.class })
 public class PicketLinkAuthenticatorAS7TestCase extends AbstractPicketLinkAuthenticatorTestCase {
     
     @Deployment(name = "authenticator", testable = false)

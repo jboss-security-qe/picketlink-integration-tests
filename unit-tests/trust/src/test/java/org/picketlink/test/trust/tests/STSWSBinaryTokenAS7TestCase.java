@@ -37,17 +37,15 @@ import javax.xml.ws.handler.MessageContext;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.TargetsContainer;
+import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ArchivePaths;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.jboss.shrinkwrap.impl.base.exporter.zip.ZipExporterImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.picketlink.identity.federation.core.exceptions.ConfigurationException;
 import org.picketlink.identity.federation.core.exceptions.ParsingException;
 import org.picketlink.identity.federation.core.exceptions.ProcessingException;
-import org.picketlink.test.integration.util.PicketLinkIntegrationTests;
-import org.picketlink.test.integration.util.TargetContainers;
 import org.picketlink.test.integration.util.TestUtil;
 import org.picketlink.test.trust.ws.TestBean;
 import org.picketlink.test.trust.ws.WSTest;
@@ -61,7 +59,7 @@ import org.picketlink.trust.jbossws.handler.BinaryTokenHandler;
  * @author Anil.Saldhana@redhat.com
  * @since Apr 5, 2011
  */
-@TargetContainers ({"jbas7", "eap6"})
+@RunWith(Arquillian.class)
 public class STSWSBinaryTokenAS7TestCase extends AbstractSTSWSBinaryTokenTestCase {
   
     @Deployment(name = "ws-binarybean.jar", testable = false)
@@ -78,7 +76,7 @@ public class STSWSBinaryTokenAS7TestCase extends AbstractSTSWSBinaryTokenTestCas
         archive.addAsManifestResource(new File("../../unit-tests/trust/target/test-classes/jboss-deployment-structure.xml"));
         archive.addAsResource(new File("../../unit-tests/trust/target/test-classes/props/sts-users.properties"), ArchivePaths.create("users.properties"));
         archive.addAsResource(new File("../../unit-tests/trust/target/test-classes/props/sts-roles.properties"), ArchivePaths.create("roles.properties"));
-        
+
         return archive;
     }
     

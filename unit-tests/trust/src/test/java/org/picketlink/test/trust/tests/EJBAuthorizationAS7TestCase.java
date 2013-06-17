@@ -33,6 +33,7 @@ import junit.framework.Assert;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.TargetsContainer;
+import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.shrinkwrap.api.ArchivePaths;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
@@ -42,6 +43,8 @@ import org.picketlink.identity.federation.bindings.jboss.auth.SAML2STSLoginModul
 import org.picketlink.identity.federation.core.saml.v2.util.DocumentUtil;
 import org.picketlink.test.integration.util.PicketLinkIntegrationTests;
 import org.picketlink.test.integration.util.TargetContainers;
+import org.picketlink.test.integration.util.serversetuptasks.IDPSecurityDomainServerSetupTask.PicketlinkStsDomain;
+import org.picketlink.test.integration.util.serversetuptasks.IDPSecurityDomainServerSetupTask.StsDomain;
 import org.picketlink.test.trust.ejb.EchoService;
 import org.picketlink.test.trust.ejb.EchoServiceImpl;
 import org.w3c.dom.Element;
@@ -59,6 +62,7 @@ import com.sun.security.sasl.Provider;
  */
 @RunWith(PicketLinkIntegrationTests.class)
 @TargetContainers({ "disabled" })
+// Security Domain need to be added by ServerSetup annotation if test be activated
 public class EJBAuthorizationAS7TestCase extends TrustTestsBase {
 
     @Deployment(name = "ejb-test", testable = false)

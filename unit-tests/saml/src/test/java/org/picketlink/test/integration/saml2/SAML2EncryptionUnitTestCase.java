@@ -38,10 +38,13 @@ import java.security.cert.CertificateException;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.TargetsContainer;
+import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.picketlink.test.integration.util.MavenArtifactUtil;
 import org.picketlink.test.integration.util.TargetContainers;
+import org.picketlink.test.integration.util.serversetuptasks.IDPSecurityDomainServerSetupTask.IdpDomain;
+import org.picketlink.test.integration.util.serversetuptasks.IDPSecurityDomainServerSetupTask.SpDomain;
 
 import com.meterware.httpunit.GetMethodWebRequest;
 import com.meterware.httpunit.SubmitButton;
@@ -56,6 +59,7 @@ import com.meterware.httpunit.WebResponse;
  * @author Pedro Igor
  */
 @TargetContainers ({"jbas5", "jbas6", "jbas7", "eap5", "eap6"})
+@ServerSetup({ IdpDomain.class, SpDomain.class })
 public class SAML2EncryptionUnitTestCase extends AbstractSAMLIntegrationTests {
     
     @Test

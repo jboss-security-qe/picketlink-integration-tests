@@ -42,6 +42,7 @@ import org.junit.Test;
 import org.picketlink.identity.federation.core.exceptions.ConfigurationException;
 import org.picketlink.identity.federation.core.exceptions.ParsingException;
 import org.picketlink.identity.federation.core.exceptions.ProcessingException;
+import org.picketlink.test.integration.util.PicketLinkIntegrationTests;
 import org.picketlink.test.integration.util.TargetContainers;
 import org.picketlink.test.integration.util.TestUtil;
 import org.picketlink.test.trust.ws.TestBean;
@@ -49,6 +50,7 @@ import org.picketlink.test.trust.ws.WSTest;
 import org.picketlink.test.trust.ws.handlers.TestBinaryHandler;
 import org.picketlink.test.trust.ws.http.TestServletRequest;
 import org.picketlink.trust.jbossws.handler.BinaryTokenHandler;
+import org.junit.runner.RunWith;
 
 /**
  * Unit Test the {@link BinaryTokenHandler}
@@ -57,6 +59,7 @@ import org.picketlink.trust.jbossws.handler.BinaryTokenHandler;
  * @since Apr 5, 2011
  */
 @TargetContainers ({"jbas5", "eap5"})
+@RunWith(PicketLinkIntegrationTests.class)
 public class STSWSBinaryTokenTestCase extends AbstractSTSWSBinaryTokenTestCase {
   
     @Deployment(name = "ws-binarybean.jar", testable = false)
