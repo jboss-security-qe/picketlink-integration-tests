@@ -22,7 +22,8 @@
 		<version.tomcat_6>6.0.26</version.tomcat_6>
 
 		<!-- Test dependencies version. -->
-		<version.arqillian_jboss_as>7.1.1.Final</version.arqillian_jboss_as>
+		<!--<version.arqillian_jboss_as>7.1.1.Final</version.arqillian_jboss_as>-->
+		<version.arqillian_jboss_as>7.2.0.Final</version.arqillian_jboss_as>
 		<version.arquillian>1.0.0.CR7</version.arquillian>
 		<version.arquillian_drone>1.0.0.CR4</version.arquillian_drone>
 		<version.junit>4.8.1</version.junit>
@@ -30,9 +31,11 @@
 		<eap5-dist-zip>jboss-eap-noauth-5.2.0-ER6.zip</eap5-dist-zip>
 		<eap5-dist-url>http://download.devel.redhat.com/devel/candidates/JBEAP/5.2.0.ER6/${eap5-dist-zip}</eap5-dist-url>
 		<eap5-dir-structure>jboss-eap-5.2/jboss-as</eap5-dir-structure>
-		<eap6-dist-zip>jboss-eap-6.0.1.zip</eap6-dist-zip>
+		<!--<eap6-dist-zip>jboss-eap-6.0.1.zip</eap6-dist-zip>-->
+		<eap6-dist-zip>jboss-eap-6.1.0.zip</eap6-dist-zip>
 		<eap6-dist-url>http://download.devel.redhat.com/released/JBEAP-6/6.0.1/zip/${eap6-dist-zip}</eap6-dist-url>
-		<eap6-dir-structure>jboss-eap-6.0</eap6-dir-structure>
+		<!--<eap6-dir-structure>jboss-eap-6.0</eap6-dir-structure>-->
+		<eap6-dir-structure>jboss-eap-6.1</eap6-dir-structure>
 	</properties>
 
 	<dependencyManagement>
@@ -40,7 +43,7 @@
 			<dependency>
 				<groupId>org.picketlink</groupId>
 				<artifactId>picketlink-core</artifactId>
-				<version>${version.picketlink}</version>
+					<version>${version.picketlink}</version>
 				<scope>test</scope>
 			</dependency>
 
@@ -115,7 +118,32 @@
 			<artifactId>jboss-logging</artifactId>
 			<version>3.1.1.GA</version>
 		</dependency>
-		
+		<dependency>
+  			<groupId>org.jboss.as</groupId>
+  			<artifactId>jboss-as-controller-client</artifactId>
+  			<version>7.2.0.Final</version>
+		</dependency>		
+		<dependency>
+		    <groupId>org.jboss.as</groupId>
+		    <artifactId>jboss-as-arquillian-common</artifactId>
+		    <version>7.2.0.Final</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.jboss.arquillian.container</groupId>
+		    <artifactId>arquillian-container-test-api</artifactId>
+		    <version>1.0.4.Final</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.jboss.as</groupId>
+		    <artifactId>jboss-as-arquillian-common</artifactId>
+		    <version>7.2.0.Final</version>
+		</dependency>
+		<dependency>
+		    <groupId>commons-lang</groupId>
+		    <artifactId>commons-lang</artifactId>
+		    <version>2.6</version>
+		</dependency>	
+
 		<dependency>
     		<groupId>org.apache.httpcomponents</groupId>
     		<artifactId>httpclient</artifactId>
@@ -143,6 +171,15 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.0</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
 			</plugin>			
 		</plugins>
 	</build>
