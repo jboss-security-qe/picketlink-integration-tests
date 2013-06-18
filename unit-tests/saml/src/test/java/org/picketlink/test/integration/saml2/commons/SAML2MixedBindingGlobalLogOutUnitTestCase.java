@@ -19,25 +19,21 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.picketlink.test.integration.saml2;
+package org.picketlink.test.integration.saml2.commons;
 
 import static org.junit.Assert.assertTrue;
 import static org.picketlink.test.integration.util.PicketLinkConfigurationUtil.addTrustedDomain;
 import static org.picketlink.test.integration.util.TestUtil.getServerAddress;
 
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.container.test.api.TargetsContainer;
-import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.picketlink.identity.federation.core.exceptions.ConfigurationException;
 import org.picketlink.identity.federation.core.exceptions.ParsingException;
 import org.picketlink.identity.federation.core.exceptions.ProcessingException;
+import org.picketlink.test.integration.saml2.AbstractSAMLIntegrationTests;
 import org.picketlink.test.integration.util.MavenArtifactUtil;
-import org.picketlink.test.integration.util.TargetContainers;
-import org.picketlink.test.integration.util.serversetuptasks.IDPSecurityDomainServerSetupTask.IdpDomain;
-import org.picketlink.test.integration.util.serversetuptasks.IDPSecurityDomainServerSetupTask.SpDomain;
 
 import com.meterware.httpunit.GetMethodWebRequest;
 import com.meterware.httpunit.SubmitButton;
@@ -58,8 +54,6 @@ import com.meterware.httpunit.WebResponse;
  * @author Anil.Saldhana@redhat.com
  * @since Apr 8, 2010
  */
-@TargetContainers ({"jbas5", "jbas6", "jbas7", "tomcat6", "eap5", "eap6"})
-@ServerSetup({ IdpDomain.class, SpDomain.class })
 public class SAML2MixedBindingGlobalLogOutUnitTestCase extends AbstractSAMLIntegrationTests {
 
     @Test

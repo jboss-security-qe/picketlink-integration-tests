@@ -15,7 +15,7 @@
  * the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF site:
  * http://www.fsf.org.
  */
-package org.picketlink.test.integration.sts;
+package org.picketlink.test.integration.sts.commons;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -39,10 +39,8 @@ import javax.xml.ws.WebServiceException;
 
 import junit.framework.Assert;
 
-import org.jboss.as.arquillian.api.ServerSetup;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.picketlink.identity.federation.api.wstrust.WSTrustClient;
 import org.picketlink.identity.federation.api.wstrust.WSTrustClient.SecurityInfo;
 import org.picketlink.identity.federation.core.saml.v1.SAML11Constants;
@@ -75,10 +73,8 @@ import org.picketlink.identity.xmlsec.w3.xmldsig.KeyValueType;
 import org.picketlink.identity.xmlsec.w3.xmldsig.RSAKeyValueType;
 import org.picketlink.identity.xmlsec.w3.xmldsig.X509CertificateType;
 import org.picketlink.identity.xmlsec.w3.xmldsig.X509DataType;
-import org.picketlink.test.integration.util.PicketLinkIntegrationTests;
-import org.picketlink.test.integration.util.TargetContainers;
+import org.picketlink.test.integration.sts.AbstractWSTrustIntegrationTests;
 import org.picketlink.test.integration.util.TestUtil;
-import org.picketlink.test.integration.util.serversetuptasks.IDPSecurityDomainServerSetupTask.PicketlinkStsDomain;
 import org.w3c.dom.Element;
 
 /**
@@ -90,9 +86,6 @@ import org.w3c.dom.Element;
  * @author <a href="mailto:sguilhen@redhat.com">Stefan Guilhen</a>
  * @since Jun 8, 2010
  */
-@RunWith(PicketLinkIntegrationTests.class)
-@TargetContainers ({"jbas5", "jbas7", "eap5", "eap6"})
-@ServerSetup({ PicketlinkStsDomain.class })
 public class PicketLinkSTSIntegrationUnitTestCase extends AbstractWSTrustIntegrationTests {
     private static WSTrustClient client;
 

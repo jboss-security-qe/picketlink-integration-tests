@@ -19,9 +19,10 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.picketlink.test.trust.tests;
+package org.picketlink.test.trust.tests.jbas7;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.net.URL;
@@ -30,6 +31,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Service;
+import javax.xml.ws.WebServiceException;
 import javax.xml.ws.handler.Handler;
 import javax.xml.ws.handler.MessageContext;
 
@@ -42,15 +44,13 @@ import org.junit.Test;
 import org.picketlink.identity.federation.core.exceptions.ConfigurationException;
 import org.picketlink.identity.federation.core.exceptions.ParsingException;
 import org.picketlink.identity.federation.core.exceptions.ProcessingException;
-import org.picketlink.test.integration.util.PicketLinkIntegrationTests;
-import org.picketlink.test.integration.util.TargetContainers;
 import org.picketlink.test.integration.util.TestUtil;
+import org.picketlink.test.trust.tests.AbstractSTSWSBinaryTokenTestCase;
 import org.picketlink.test.trust.ws.TestBean;
 import org.picketlink.test.trust.ws.WSTest;
 import org.picketlink.test.trust.ws.handlers.TestBinaryHandler;
 import org.picketlink.test.trust.ws.http.TestServletRequest;
 import org.picketlink.trust.jbossws.handler.BinaryTokenHandler;
-import org.junit.runner.RunWith;
 
 /**
  * Unit Test the {@link BinaryTokenHandler}
@@ -58,9 +58,7 @@ import org.junit.runner.RunWith;
  * @author Anil.Saldhana@redhat.com
  * @since Apr 5, 2011
  */
-@TargetContainers ({"jbas5", "eap5"})
-@RunWith(PicketLinkIntegrationTests.class)
-public class STSWSBinaryTokenTestCase extends AbstractSTSWSBinaryTokenTestCase {
+public class STSWSBinaryTokenAS7TestCase extends AbstractSTSWSBinaryTokenTestCase {
   
     @Deployment(name = "ws-binarybean.jar", testable = false)
     @TargetsContainer("jboss")
@@ -73,9 +71,10 @@ public class STSWSBinaryTokenTestCase extends AbstractSTSWSBinaryTokenTestCase {
         archive.addAsResource(new File("../../unit-tests/trust/target/test-classes/org/picketlink/test/trust/ws/WSTest.class"), ArchivePaths.create("org/picketlink/test/trust/ws/WSTest.class"));
         archive.addAsResource(new File("../../unit-tests/trust/target/test-classes/org/picketlink/test/trust/ws/handlers/TestBinaryHandler.class"), ArchivePaths.create("org/picketlink/test/trust/ws/handlers/TestBinaryHandler.class"));
         
+        archive.addAsManifestResource(new File("../../unit-tests/trust/target/test-classes/jboss-deployment-structure.xml"));
         archive.addAsResource(new File("../../unit-tests/trust/target/test-classes/props/sts-users.properties"), ArchivePaths.create("users.properties"));
         archive.addAsResource(new File("../../unit-tests/trust/target/test-classes/props/sts-roles.properties"), ArchivePaths.create("roles.properties"));
-        
+
         return archive;
     }
     
@@ -113,4 +112,5 @@ public class STSWSBinaryTokenTestCase extends AbstractSTSWSBinaryTokenTestCase {
 
         assertEquals("Test", port.echo("Test"));
     }
+
 }

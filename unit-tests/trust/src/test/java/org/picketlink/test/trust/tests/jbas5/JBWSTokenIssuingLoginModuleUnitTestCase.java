@@ -19,7 +19,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.picketlink.test.trust.tests;
+package org.picketlink.test.trust.tests.jbas5;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -41,6 +41,7 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.util.EntityUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.TargetsContainer;
+import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
@@ -50,10 +51,9 @@ import org.junit.runner.RunWith;
 import org.picketlink.identity.federation.core.exceptions.ConfigurationException;
 import org.picketlink.identity.federation.core.exceptions.ParsingException;
 import org.picketlink.identity.federation.core.exceptions.ProcessingException;
-import org.picketlink.test.integration.util.PicketLinkIntegrationTests;
-import org.picketlink.test.integration.util.TargetContainers;
 import org.picketlink.test.trust.loginmodules.TokenSupplierTestLoginModule;
 import org.picketlink.test.trust.servlet.TestAppServlet;
+import org.picketlink.test.trust.tests.TrustTestsBase;
 import org.picketlink.trust.jbossws.jaas.JBWSTokenIssuingLoginModule;
 
 /**
@@ -63,9 +63,7 @@ import org.picketlink.trust.jbossws.jaas.JBWSTokenIssuingLoginModule;
  * @author pskopek@redhat.com
  * @since Apr 25, 2011
  */
-
-@RunWith(PicketLinkIntegrationTests.class)
-@TargetContainers({ "jbas5", "eap5" })
+@RunWith(Arquillian.class)
 public class JBWSTokenIssuingLoginModuleUnitTestCase extends TrustTestsBase {
 
     private static final Logger log = Logger.getLogger(JBWSTokenIssuingLoginModule.class);

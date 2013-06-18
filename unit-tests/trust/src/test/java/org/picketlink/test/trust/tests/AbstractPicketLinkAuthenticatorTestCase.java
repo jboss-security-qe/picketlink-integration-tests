@@ -26,10 +26,10 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
+import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.picketlink.identity.federation.bindings.tomcat.PicketLinkAuthenticator;
-import org.picketlink.test.integration.util.PicketLinkIntegrationTests;
 import org.picketlink.test.integration.util.TestUtil;
 
 import com.meterware.httpunit.GetMethodWebRequest;
@@ -43,7 +43,7 @@ import com.meterware.httpunit.WebResponse;
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  *
  */
-@RunWith(PicketLinkIntegrationTests.class)
+@RunWith(Arquillian.class)
 public abstract class AbstractPicketLinkAuthenticatorTestCase {
 
     @Test

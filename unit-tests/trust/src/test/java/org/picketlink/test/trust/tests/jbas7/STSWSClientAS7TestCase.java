@@ -19,21 +19,19 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.picketlink.test.trust.tests;
+package org.picketlink.test.trust.tests.jbas7;
 
 import java.io.File;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.TargetsContainer;
-import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.shrinkwrap.api.ArchivePaths;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.junit.runner.RunWith;
 import org.picketlink.test.integration.util.serversetuptasks.IDPSecurityDomainServerSetupTask.PicketlinkStsDomain;
 import org.picketlink.test.integration.util.serversetuptasks.IDPSecurityDomainServerSetupTask.StsDomain;
+import org.picketlink.test.trust.tests.AbstractSTSWSClientTestCase;
 
 /**
  * A Simple WS Test for the SAML Profile of WSS
@@ -42,7 +40,6 @@ import org.picketlink.test.integration.util.serversetuptasks.IDPSecurityDomainSe
  * @author Anil Saldhana
  * @since Oct 3, 2010
  */
-@RunWith(Arquillian.class)
 @ServerSetup({ StsDomain.class, PicketlinkStsDomain.class })
 public class STSWSClientAS7TestCase extends AbstractSTSWSClientTestCase {
     

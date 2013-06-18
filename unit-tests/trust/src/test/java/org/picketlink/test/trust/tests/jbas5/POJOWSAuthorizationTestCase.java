@@ -19,7 +19,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.picketlink.test.trust.tests;
+package org.picketlink.test.trust.tests.jbas5;
 
 import java.io.File;
 
@@ -27,12 +27,10 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.TargetsContainer;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.junit.runner.RunWith;
 import org.picketlink.identity.federation.core.exceptions.ConfigurationException;
 import org.picketlink.identity.federation.core.exceptions.ParsingException;
 import org.picketlink.identity.federation.core.exceptions.ProcessingException;
-import org.picketlink.test.integration.util.PicketLinkIntegrationTests;
-import org.picketlink.test.integration.util.TargetContainers;
+import org.picketlink.test.trust.tests.AbstractPOJOWSAuthorizationTestCase;
 
 /**
  * A Simple WS Test for POJO WS Authorization using PicketLink
@@ -40,8 +38,6 @@ import org.picketlink.test.integration.util.TargetContainers;
  * @author Anil Saldhana
  * @since Oct 3, 2010
  */
-@RunWith(PicketLinkIntegrationTests.class)
-@TargetContainers({ "jbas5", "eap5"})
 public class POJOWSAuthorizationTestCase extends AbstractPOJOWSAuthorizationTestCase {
 
     @Deployment(name = "picketlink-wstest-tests", testable = false)

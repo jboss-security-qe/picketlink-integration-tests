@@ -19,7 +19,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.picketlink.test.integration.saml2;
+package org.picketlink.test.integration.saml2.commons;
 
 import static org.junit.Assert.assertEquals;
 import static org.picketlink.test.integration.util.TestUtil.getTargetURL;
@@ -31,8 +31,7 @@ import org.jboss.arquillian.container.test.api.TargetsContainer;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
-import org.picketlink.test.integration.util.MavenArtifactUtil;
-import org.picketlink.test.integration.util.TargetContainers;
+import org.picketlink.test.integration.saml2.AbstractSAMLIntegrationTests;
 
 import com.meterware.httpunit.GetMethodWebRequest;
 import com.meterware.httpunit.WebConversation;
@@ -45,7 +44,6 @@ import com.meterware.httpunit.WebResponse;
  * @author Anil.Saldhana@redhat.com
  * @since Jul 26, 2011
  */
-@TargetContainers ({"jbas5", "jbas6", "jbas7", "tomcat6", "eap5", "eap6"})
 public class SAML2ResponseParsingUnitTestCase extends AbstractSAMLIntegrationTests {
     
     /**

@@ -19,12 +19,13 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.picketlink.test.integration.saml2;
+package org.picketlink.test.integration.saml2.commons;
 
 import static org.junit.Assert.assertTrue;
 import static org.picketlink.test.integration.util.PicketLinkConfigurationUtil.addKeyStoreAlias;
 import static org.picketlink.test.integration.util.PicketLinkConfigurationUtil.addTrustedDomain;
 import static org.picketlink.test.integration.util.PicketLinkConfigurationUtil.addValidatingAlias;
+import static org.picketlink.test.integration.util.PicketLinkConfigurationUtil.changeIdentityURL;
 import static org.picketlink.test.integration.util.TestUtil.getServerAddress;
 import static org.picketlink.test.integration.util.TestUtil.getTargetURL;
 
@@ -37,13 +38,10 @@ import java.security.cert.CertificateException;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.TargetsContainer;
-import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
+import org.picketlink.test.integration.saml2.AbstractSAMLIntegrationTests;
 import org.picketlink.test.integration.util.MavenArtifactUtil;
-import org.picketlink.test.integration.util.TargetContainers;
-import org.picketlink.test.integration.util.serversetuptasks.IDPSecurityDomainServerSetupTask.IdpDomain;
-import org.picketlink.test.integration.util.serversetuptasks.IDPSecurityDomainServerSetupTask.SpDomain;
 
 import com.meterware.httpunit.GetMethodWebRequest;
 import com.meterware.httpunit.SubmitButton;
@@ -53,16 +51,14 @@ import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
 
 /**
- * Unit test the GLO scenarios involving two endpoints with SAML2 Post and Signature binding
+ * <p>Tests the authentication using an IDP configure with encryption and signature for SAML Assertions.</p> 
  * 
- * @author anil saldhana
+ * @author Pedro Igor
  */
-@TargetContainers ({"jbas5", "jbas6", "jbas7", "tomcat6", "eap5", "eap6"})
-@ServerSetup({ IdpDomain.class, SpDomain.class })
-public class SAML2PostSignatureGLOUnitTestCase extends AbstractSAMLIntegrationTests {
+public class SAML2EncryptionUnitTestCase extends AbstractSAMLIntegrationTests {
     
     @Test
-    public void testSAMLPostBindingGlobalLogOut() throws Exception {
+    public void testSAMLEncryptionAuthentication() throws Exception {
         System.out.println("Trying " + getSalesURL());
         // Sales post Application Login
         WebRequest serviceRequest1 = new GetMethodWebRequest(getSalesURL());
@@ -70,6 +66,7 @@ public class SAML2PostSignatureGLOUnitTestCase extends AbstractSAMLIntegrationTe
 
         WebResponse webResponse = webConversation.getResponse(serviceRequest1);
         WebForm loginForm = webResponse.getForms()[0];
+        System.out.println("Logging in: " + webResponse.getURL());
         loginForm.setParameter("j_username", "tomcat");
         loginForm.setParameter("j_password", "tomcat");
         SubmitButton submitButton = loginForm.getSubmitButtons()[0];
@@ -109,10 +106,10 @@ public class SAML2PostSignatureGLOUnitTestCase extends AbstractSAMLIntegrationTe
         return getTargetURL("/sales-post-sig/");
     }
     
-    @Deployment(name = "idp-sig", testable = false)
+    @Deployment(name = "idp-enc", testable = false)
     @TargetsContainer("jboss")
     public static WebArchive createIDPSigDeployment() throws GeneralSecurityException, IOException {
-        WebArchive idp = MavenArtifactUtil.getQuickstartsMavenArchive("idp-sig");
+        WebArchive idp = MavenArtifactUtil.getQuickstartsMavenArchive("idp-enc");
         
         addTrustedDomain(idp, getServerAddress());
         addValidatingAlias(idp, getServerAddress(), getServerAddress());
@@ -126,6 +123,7 @@ public class SAML2PostSignatureGLOUnitTestCase extends AbstractSAMLIntegrationTe
     public static WebArchive createSalesPostSigDeployment() throws GeneralSecurityException, IOException {
         WebArchive sp = MavenArtifactUtil.getQuickstartsMavenArchive("sales-post-sig");
         
+        changeIdentityURL(sp, getTargetURL("/idp-enc/"));
         addValidatingAlias(sp, getServerAddress(), getServerAddress());
         addKeyStoreAlias(sp, getServerAddress());
         
@@ -137,6 +135,7 @@ public class SAML2PostSignatureGLOUnitTestCase extends AbstractSAMLIntegrationTe
     public static WebArchive createEmployeeSigDeployment() throws KeyStoreException, FileNotFoundException, NoSuchAlgorithmException, CertificateException, GeneralSecurityException, IOException {
         WebArchive sp = MavenArtifactUtil.getQuickstartsMavenArchive("employee-sig");
         
+        changeIdentityURL(sp, getTargetURL("/idp-enc/"));
         addValidatingAlias(sp, getServerAddress(), getServerAddress());
         addKeyStoreAlias(sp, getServerAddress());
         

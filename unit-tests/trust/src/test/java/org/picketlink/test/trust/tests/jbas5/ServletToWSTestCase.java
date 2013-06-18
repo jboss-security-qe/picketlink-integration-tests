@@ -19,47 +19,52 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.picketlink.test.trust.tests;
+package org.picketlink.test.trust.tests.jbas5;
+
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.methods.PostMethod;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.TargetsContainer;
-import org.jboss.shrinkwrap.api.ArchivePaths;
+import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.picketlink.identity.federation.core.exceptions.ConfigurationException;
 import org.picketlink.identity.federation.core.exceptions.ParsingException;
 import org.picketlink.identity.federation.core.exceptions.ProcessingException;
-import org.picketlink.test.integration.util.PicketLinkIntegrationTests;
-import org.picketlink.test.integration.util.TargetContainers;
+import org.picketlink.test.integration.util.TestUtil;
 
 /**
- * A Simple WS Test for the SAML Profile of WSS
+ * A Test that passes a binary header to a servlet that is governed by the {@code PicketLinkAuthenticator}. The
+ * {@code JBWSTokenIssuingLoginModule} is invoked which calls the STS. On the call to the STS, the binary token handler kicks in
+ * and reads the binary token and adds it to the sts call.
  * 
- * @author Marcus Moyses
- * @author Anil Saldhana
- * @since Oct 3, 2010
+ * Once the SAML2 Assertion is obtained, the servlet then makes a call to the WS
+ * 
+ * @author Anil.Saldhana@redhat.com
+ * @since May 9, 2011
  */
-@TargetContainers ({"jbas5", "eap5"})
-@RunWith(PicketLinkIntegrationTests.class)
-public class STSWSClientTestCase extends AbstractSTSWSClientTestCase {
+@RunWith(Arquillian.class)
+public class ServletToWSTestCase {
     
-    @Deployment(name = "ws-testbean", testable = false)
+    @Deployment(name = "binary-test", testable = false)
     @TargetsContainer("jboss")
     public static JavaArchive createWSTestDeployment() throws ConfigurationException, ProcessingException, ParsingException,
             InterruptedException {
-        JavaArchive archive = ShrinkWrap.create(JavaArchive.class, "ws-testbean.jar");
-        
-        archive.addAsResource(new File("../../unit-tests/trust/target/test-classes/handlers.xml"));
-        archive.addAsResource(new File("../../unit-tests/trust/target/test-classes/org/picketlink/test/trust/ws/WSTestBean.class"), ArchivePaths.create("org/picketlink/test/trust/ws/WSTestBean.class"));
-        archive.addAsResource(new File("../../unit-tests/trust/target/test-classes/org/picketlink/test/trust/ws/WSTest.class"), ArchivePaths.create("org/picketlink/test/trust/ws/WSTest.class"));
-        
-        archive.addAsResource(new File("../../unit-tests/trust/target/test-classes/props/sts-users.properties"), ArchivePaths.create("users.properties"));
-        archive.addAsResource(new File("../../unit-tests/trust/target/test-classes/props/sts-roles.properties"), ArchivePaths.create("roles.properties"));
-        
-        return archive;
+        return ShrinkWrap.createFromZipFile(JavaArchive.class, new File("../../unit-tests/trust/target/binary-test.war"));
     }
     
+    @Test
+    public void testServlet2WS() throws Exception {
+        HttpClient client = new HttpClient();
+        PostMethod post = new PostMethod(TestUtil.getTargetURL("/binary-test/TestWSInvokingServlet"));
+        post.addRequestHeader("TEST_HEADER", "somevalue");
+        int result = client.executeMethod(post);
+        assertEquals(200, result);
+    }
 }

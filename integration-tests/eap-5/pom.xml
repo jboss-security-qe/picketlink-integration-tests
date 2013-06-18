@@ -90,7 +90,54 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
-				<version>2.12</version>
+				<version>${maven.failsafe.plugin.version}</version>
+				<executions>
+					<execution>
+						<id>integration-test</id>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+						<configuration>
+							<includes>
+								<include>**/jbas5/*TestCase.java</include>
+								<include>**/eap5/*TestCase.java</include>
+								<include>**/commons/*TestCase.java</include>
+							</includes>
+							<systemProperties>
+								<property>
+									<name>project.artifactId</name>
+									<value>${project.artifactId}</value>
+								</property>
+								<property>
+									<name>project.version</name>
+									<value>${project.version}</value>
+								</property>
+								<property>
+									<name>version.picketlink</name>
+									<value>${version.picketlink}</value>
+								</property>
+								<property>
+									<name>version.picketlink.quickstarts</name>
+									<value>${version.picketlink.quickstarts}</value>
+								</property>
+								<property>
+									<name>binding</name>
+									<value>${binding.server}</value>
+								</property>
+								<property>
+									<name>jboss.as.home</name>
+									<value>${jboss.as.home}</value>
+								</property>
+								<property>
+									<name>maven.repo.local</name>
+									<value>${settings.localRepository}</value>
+								</property>
+							</systemProperties>
+							<reportNameSuffix>SAML-${binding.server}</reportNameSuffix>
+						</configuration>
+					</execution>
+				</executions>
 				<configuration>
 					<argLine>-Djava.endorsed.dirs=${jboss.as.home}/lib/endorsed</argLine>
 					<additionalClasspathElements>
@@ -107,6 +154,7 @@
 					</additionalClasspathElements>
 				</configuration>
 			</plugin>
+			
 		</plugins>
 		<pluginManagement>
 			<plugins>

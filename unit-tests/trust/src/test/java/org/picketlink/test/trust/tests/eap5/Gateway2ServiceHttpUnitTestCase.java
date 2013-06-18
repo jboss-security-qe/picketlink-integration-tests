@@ -19,7 +19,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.picketlink.test.trust.tests;
+package org.picketlink.test.trust.tests.eap5;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -44,6 +44,7 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.util.EntityUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.TargetsContainer;
+import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
@@ -61,6 +62,7 @@ import org.picketlink.test.integration.util.TargetContainers;
 import org.picketlink.test.trust.loginmodules.TokenSupplierTestLoginModule;
 import org.picketlink.test.trust.servlet.GatewayServlet;
 import org.picketlink.test.trust.servlet.ServiceServlet;
+import org.picketlink.test.trust.tests.TrustTestsBase;
 
 /**
  * Unit test to test scenario with JBWSTokenIssuingLoginModule as gateway which obtains SAML token 
@@ -72,8 +74,9 @@ import org.picketlink.test.trust.servlet.ServiceServlet;
  * @since Aug 29, 2012
  */
 
-@RunWith(PicketLinkIntegrationTests.class)
-@TargetContainers({ "eap5" })
+//@RunWith(PicketLinkIntegrationTests.class)
+//@TargetContainers({ "eap5" })
+@RunWith(Arquillian.class)
 public class Gateway2ServiceHttpUnitTestCase extends TrustTestsBase {
 
     private static final Logger log = Logger.getLogger(Gateway2ServiceHttpUnitTestCase.class);

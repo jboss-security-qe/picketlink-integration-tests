@@ -19,51 +19,49 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.picketlink.test.trust.tests;
+package org.picketlink.test.trust.tests.jbas7;
 
 import java.io.File;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.TargetsContainer;
-import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.shrinkwrap.api.ArchivePaths;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.runner.RunWith;
-import org.picketlink.test.integration.util.serversetuptasks.IDPSecurityDomainServerSetupTask.PicketlinkStsDomain;
-import org.picketlink.test.integration.util.serversetuptasks.IDPSecurityDomainServerSetupTask.StsDomain;
+import org.picketlink.identity.federation.bindings.tomcat.PicketLinkAuthenticator;
+import org.picketlink.test.integration.util.serversetuptasks.IDPSecurityDomainServerSetupTask.AuthenticatorDomain;
+import org.picketlink.test.trust.tests.AbstractPicketLinkAuthenticatorTestCase;
 
 /**
- * A Simple WS Test for POJO WS Authorization using PicketLink
+ * Test the {@link PicketLinkAuthenticator}
  * 
- * @author Anil Saldhana
- * @since Oct 3, 2010
+ * @author Anil.Saldhana@redhat.com
+ * @since Sep 13, 2011
  */
-@RunWith(Arquillian.class)
-@ServerSetup({ StsDomain.class, PicketlinkStsDomain.class })
-public class POJOWSAuthorizationAS7TestCase extends AbstractPOJOWSAuthorizationTestCase {
-
-    @Deployment(name = "pojo-test", testable = false)
+@ServerSetup({ AuthenticatorDomain.class })
+public class PicketLinkAuthenticatorAS7TestCase extends AbstractPicketLinkAuthenticatorTestCase {
+    
+    @Deployment(name = "authenticator", testable = false)
     @TargetsContainer("jboss")
-    public static WebArchive createWSTestDeployment() {
+    public static WebArchive createAuthenticatorDeployment() {
         WebArchive archive = ShrinkWrap.create(WebArchive.class);
         
-        archive.addAsWebInfResource(new File("../../unit-tests/trust/target/test-classes/pojo-test/WEB-INF/web.xml"));
-        archive.addAsWebInfResource(new File("../../unit-tests/trust/target/test-classes/pojo-test/WEB-INF/jboss-web.xml"));
-        archive.addAsWebInfResource(new File("../../unit-tests/trust/target/test-classes/pojo-test/WEB-INF/jboss-wsse.xml"));
-        archive.addAsWebInfResource(new File("../../unit-tests/trust/target/test-classes/authorize-handlers.xml"), ArchivePaths.create("classes/authorize-handlers.xml"));
-        archive.addAsWebInfResource(new File("../../unit-tests/trust/target/test-classes/org/picketlink/test/trust/ws/POJOBean.class"), ArchivePaths.create("classes/org/picketlink/test/trust/ws/POJOBean.class"));
+        archive.addAsWebInfResource(getTestFile("as7/WEB-INF/web.xml"));
+        archive.addAsWebInfResource(getTestFile("as7/WEB-INF/jboss-web.xml"));
         archive.addAsManifestResource(new File("../../unit-tests/trust/target/test-classes/jboss-deployment-structure.xml"));
+        
+        archive.addAsWebResource(getTestFile("index.jsp"));
+        archive.addAsWebResource(getTestFile("error.html"));
+        archive.addAsWebResource(getTestFile("login.html"));
         
         archive.addAsWebInfResource(new File("../../unit-tests/trust/target/test-classes/props/sts-users.properties"), ArchivePaths.create("classes/users.properties"));
         archive.addAsWebInfResource(new File("../../unit-tests/trust/target/test-classes/props/sts-roles.properties"), ArchivePaths.create("classes/roles.properties"));
-        archive.addAsWebInfResource(new File("../../unit-tests/trust/target/test-classes/props/sts-config.properties"), ArchivePaths.create("classes/sts-config.properties"));
+        
+        archive.addClass(org.picketlink.test.trust.loginmodules.TestRequestUserLoginModule.class);
 
+        //archive.as(ZipExporter.class).exportTo(new File("authenticator.war"), true);
         return archive;
     }
     
-    
-
 }

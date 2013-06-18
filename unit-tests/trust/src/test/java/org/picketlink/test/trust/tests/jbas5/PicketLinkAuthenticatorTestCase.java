@@ -19,20 +19,20 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.picketlink.test.trust.tests;
+package org.picketlink.test.trust.tests.jbas5;
 
 import java.io.File;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.TargetsContainer;
-import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.as.arquillian.api.ServerSetup;
-import org.jboss.shrinkwrap.api.ArchivePaths;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.runner.RunWith;
 import org.picketlink.identity.federation.bindings.tomcat.PicketLinkAuthenticator;
-import org.picketlink.test.integration.util.serversetuptasks.IDPSecurityDomainServerSetupTask.AuthenticatorDomain;
+import org.picketlink.identity.federation.core.exceptions.ConfigurationException;
+import org.picketlink.identity.federation.core.exceptions.ParsingException;
+import org.picketlink.identity.federation.core.exceptions.ProcessingException;
+import org.picketlink.test.trust.tests.AbstractPicketLinkAuthenticatorTestCase;
 
 /**
  * Test the {@link PicketLinkAuthenticator}
@@ -40,30 +40,27 @@ import org.picketlink.test.integration.util.serversetuptasks.IDPSecurityDomainSe
  * @author Anil.Saldhana@redhat.com
  * @since Sep 13, 2011
  */
-@RunWith(Arquillian.class)
-@ServerSetup({ AuthenticatorDomain.class })
-public class PicketLinkAuthenticatorAS7TestCase extends AbstractPicketLinkAuthenticatorTestCase {
+public class PicketLinkAuthenticatorTestCase extends AbstractPicketLinkAuthenticatorTestCase {
     
     @Deployment(name = "authenticator", testable = false)
     @TargetsContainer("jboss")
     public static WebArchive createAuthenticatorDeployment() {
         WebArchive archive = ShrinkWrap.create(WebArchive.class);
         
-        archive.addAsWebInfResource(getTestFile("as7/WEB-INF/web.xml"));
-        archive.addAsWebInfResource(getTestFile("as7/WEB-INF/jboss-web.xml"));
-        archive.addAsManifestResource(new File("../../unit-tests/trust/target/test-classes/jboss-deployment-structure.xml"));
+        archive.addAsWebInfResource(getTestFile("as5/WEB-INF/web.xml"));
+        archive.addAsWebInfResource(getTestFile("as5/WEB-INF/context.xml"));
+        archive.addAsWebInfResource(getTestFile("as5/WEB-INF/jboss-web.xml"));
         
         archive.addAsWebResource(getTestFile("index.jsp"));
-        archive.addAsWebResource(getTestFile("error.html"));
-        archive.addAsWebResource(getTestFile("login.html"));
         
-        archive.addAsWebInfResource(new File("../../unit-tests/trust/target/test-classes/props/sts-users.properties"), ArchivePaths.create("classes/users.properties"));
-        archive.addAsWebInfResource(new File("../../unit-tests/trust/target/test-classes/props/sts-roles.properties"), ArchivePaths.create("classes/roles.properties"));
-        
-        archive.addClass(org.picketlink.test.trust.loginmodules.TestRequestUserLoginModule.class);
-
-        //archive.as(ZipExporter.class).exportTo(new File("authenticator.war"), true);
         return archive;
     }
     
+    @Deployment(name = "picketlink-wstest-tests", testable = false)
+    @TargetsContainer("jboss")
+    public static JavaArchive createWSTestDeployment() throws ConfigurationException, ProcessingException, ParsingException,
+            InterruptedException {
+        return ShrinkWrap.createFromZipFile(JavaArchive.class, new File("../../unit-tests/trust/target/picketlink-wstest-tests.jar"));
+    }
+
 }

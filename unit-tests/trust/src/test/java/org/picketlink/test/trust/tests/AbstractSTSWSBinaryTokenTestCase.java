@@ -30,9 +30,9 @@ import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
 import javax.xml.ws.WebServiceException;
 
+import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.picketlink.test.integration.util.PicketLinkIntegrationTests;
 import org.picketlink.test.integration.util.TestUtil;
 import org.picketlink.test.trust.ws.TestBean;
 import org.picketlink.test.trust.ws.WSTest;
@@ -44,7 +44,7 @@ import org.picketlink.trust.jbossws.handler.BinaryTokenHandler;
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  *
  */
-@RunWith(PicketLinkIntegrationTests.class)
+@RunWith(Arquillian.class)
 public abstract class AbstractSTSWSBinaryTokenTestCase {
 
     /**

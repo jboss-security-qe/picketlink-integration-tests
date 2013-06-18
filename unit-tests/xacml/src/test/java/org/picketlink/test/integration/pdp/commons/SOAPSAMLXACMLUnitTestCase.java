@@ -19,7 +19,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.picketlink.test.integration.pdp;
+package org.picketlink.test.integration.pdp.commons;
 
 import static org.junit.Assert.assertTrue;
 
@@ -41,7 +41,7 @@ import org.jboss.security.xacml.factories.RequestAttributeFactory;
 import org.junit.Test;
 import org.picketlink.identity.federation.api.soap.SOAPSAMLXACML;
 import org.picketlink.identity.federation.api.soap.SOAPSAMLXACML.Result;
-import org.picketlink.test.integration.util.TargetContainers;
+import org.picketlink.test.integration.pdp.AbstractXACMLIntegrationTests;
 import org.picketlink.test.integration.util.TestUtil;
 
 /**
@@ -50,7 +50,6 @@ import org.picketlink.test.integration.util.TestUtil;
  * @author Anil.Saldhana@redhat.com
  * @since Jul 31, 2009
  */
-@TargetContainers ({"jbas5", "jbas6", "jbas7", "eap5", "eap6"})
 public class SOAPSAMLXACMLUnitTestCase extends AbstractXACMLIntegrationTests {
     // Change it to true when you have an end point running locally
     private boolean sendRequest = true;

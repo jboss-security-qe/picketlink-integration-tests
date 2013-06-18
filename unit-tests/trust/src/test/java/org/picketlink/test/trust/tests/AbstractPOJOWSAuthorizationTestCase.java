@@ -34,7 +34,9 @@ import javax.xml.ws.Service;
 import javax.xml.ws.handler.Handler;
 import javax.xml.ws.soap.SOAPFaultException;
 
+import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.picketlink.test.integration.util.TestUtil;
 import org.picketlink.test.trust.ws.WSTest;
 import org.picketlink.trust.jbossws.SAML2Constants;
@@ -45,6 +47,7 @@ import org.w3c.dom.Element;
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  *
  */
+@RunWith(Arquillian.class)
 public abstract class AbstractPOJOWSAuthorizationTestCase extends TrustTestsBase {
 
     @SuppressWarnings("rawtypes")
