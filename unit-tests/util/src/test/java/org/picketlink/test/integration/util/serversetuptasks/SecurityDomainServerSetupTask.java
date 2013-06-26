@@ -3,7 +3,7 @@ package org.picketlink.test.integration.util.serversetuptasks;
 import java.util.HashMap;
 import java.util.Map;
 
-public class IDPSecurityDomainServerSetupTask {
+public class SecurityDomainServerSetupTask {
 	
 	private static final String IDP = "idp";
 	private static final String PICKETLINK_STS = "picketlink-sts";

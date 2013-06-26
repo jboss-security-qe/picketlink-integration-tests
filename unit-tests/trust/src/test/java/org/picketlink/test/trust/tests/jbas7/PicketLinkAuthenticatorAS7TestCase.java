@@ -30,7 +30,7 @@ import org.jboss.shrinkwrap.api.ArchivePaths;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.picketlink.identity.federation.bindings.tomcat.PicketLinkAuthenticator;
-import org.picketlink.test.integration.util.serversetuptasks.IDPSecurityDomainServerSetupTask.AuthenticatorDomain;
+import org.picketlink.test.integration.util.serversetuptasks.SecurityDomainServerSetupTask.AuthenticatorDomain;
 import org.picketlink.test.trust.tests.AbstractPicketLinkAuthenticatorTestCase;
 
 /**

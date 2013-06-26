@@ -29,8 +29,8 @@ import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.shrinkwrap.api.ArchivePaths;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.picketlink.test.integration.util.serversetuptasks.IDPSecurityDomainServerSetupTask.PicketlinkStsDomain;
-import org.picketlink.test.integration.util.serversetuptasks.IDPSecurityDomainServerSetupTask.StsDomain;
+import org.picketlink.test.integration.util.serversetuptasks.SecurityDomainServerSetupTask.PicketlinkStsDomain;
+import org.picketlink.test.integration.util.serversetuptasks.SecurityDomainServerSetupTask.StsDomain;
 import org.picketlink.test.trust.tests.AbstractSTSWSClientTestCase;
 
 /**

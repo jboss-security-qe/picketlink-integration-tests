@@ -30,8 +30,8 @@ import org.jboss.shrinkwrap.api.ArchivePaths;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.picketlink.test.integration.util.serversetuptasks.IDPSecurityDomainServerSetupTask.PicketlinkStsDomain;
-import org.picketlink.test.integration.util.serversetuptasks.IDPSecurityDomainServerSetupTask.StsDomain;
+import org.picketlink.test.integration.util.serversetuptasks.SecurityDomainServerSetupTask.PicketlinkStsDomain;
+import org.picketlink.test.integration.util.serversetuptasks.SecurityDomainServerSetupTask.StsDomain;
 import org.picketlink.test.trust.tests.AbstractPOJOWSAuthorizationTestCase;
 
 /**
