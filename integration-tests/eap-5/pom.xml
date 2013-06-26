@@ -79,6 +79,24 @@
 	<build>
 		<plugins>
 			<plugin>
+			    <groupId>com.googlecode.maven-download-plugin</groupId>
+			    <artifactId>maven-download-plugin</artifactId>
+			    <executions>
+				<execution>
+				    <id>download-eap5</id>
+				    <phase>initialize</phase>
+				    <goals>
+					<goal>wget</goal>
+				    </goals>
+				    <configuration>
+					<url>${eap5-dist-url}</url>
+					<unpack>false</unpack>
+					<outputDirectory>${dist.dir}</outputDirectory>
+				    </configuration>
+				</execution>
+			    </executions>
+			</plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-antrun-plugin</artifactId>
 			</plugin>
