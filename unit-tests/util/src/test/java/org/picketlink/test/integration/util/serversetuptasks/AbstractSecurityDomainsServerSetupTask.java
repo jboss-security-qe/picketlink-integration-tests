@@ -63,7 +63,8 @@ public abstract class AbstractSecurityDomainsServerSetupTask implements ServerSe
     private static final String FLAG = "flag";
     private static final String JSSE = "jsse";
     private static final String KEYSTORE = "keystore";
-    private static final String LOGIN_MODULE = "login-module";
+    //private static final String LOGIN_MODULE = "login-module";
+    private static final String LOGIN_MODULE = "login-modules";
     private static final String MODULE_OPTIONS = "module-options";
     private static final String PASSWORD = "password";
     private static final String SECURITY_DOMAIN = "security-domain";
@@ -331,7 +332,7 @@ public abstract class AbstractSecurityDomainsServerSetupTask implements ServerSe
      * @param securityModules   configurations
      * @return ModelNode instance or null
      */
-    private boolean createSecurityModelNode(String securityComponent, String subnodeName, String flagAttributeName,
+    /*private boolean createSecurityModelNode(String securityComponent, String subnodeName, String flagAttributeName,
                                             String flagDefaultValue, final SecurityModule[] securityModules, String domainName, ModelNode operations) {
         if (securityModules == null || securityModules.length == 0) {
             if (LOGGER.isInfoEnabled()) {
@@ -371,7 +372,58 @@ public abstract class AbstractSecurityDomainsServerSetupTask implements ServerSe
             operations.add(securityModuleNode);
         }
         return true;
+    }*/
+    
+    private boolean createSecurityModelNode(String securityComponent, String subnodeName, String flagAttributeName,
+            String flagDefaultValue, final SecurityModule[] securityModules, String domainName, ModelNode operations) {
+		if (securityModules == null || securityModules.length == 0) {
+			if (LOGGER.isInfoEnabled()) {
+				LOGGER.info("No security configuration for " + securityComponent + " module.");
+			}
+			return false;
+		}		
+		
+		PathAddress address = PathAddress.pathAddress()
+                .append(SUBSYSTEM, SUBSYSTEM_SECURITY)
+                .append(SECURITY_DOMAIN, domainName)
+                .append(securityComponent, CLASSIC);  
+		final ModelNode securityModuleNode = Util.createAddOperation(address);
+        
+        for (final SecurityModule config : securityModules) {           
+                        
+            ModelNode loginModule = securityModuleNode.get("login-modules").add();
+            
+            final String code = config.getName();
+            final String flag = StringUtils.defaultIfEmpty(config.getFlag(), flagDefaultValue);
+        	loginModule.get(ModelDescriptionConstants.CODE).set(code);
+        	loginModule.get(flagAttributeName).set(flag);        	
+        	
+        	//ModelNode moduleOptions = loginModule.get("module-options");
+            
+
+            Map<String, String> configOptions = config.getOptions();
+            if (configOptions == null) {
+                LOGGER.info("No module options provided.");
+                configOptions = Collections.emptyMap();
+            }
+            if (LOGGER.isInfoEnabled()) {
+                LOGGER.info("Adding " + securityComponent + " module [code=" + code + ", " + flagAttributeName + "=" + flag
+                        + ", options = " + configOptions + "]");
+            }
+            //final ModelNode moduleOptionsNode = securityModuleNode.get(MODULE_OPTIONS);
+            final ModelNode moduleOptionsNode = loginModule.get(MODULE_OPTIONS);
+            for (final Map.Entry<String, String> entry : configOptions.entrySet()) {
+                final String optionName = entry.getKey();
+                final String optionValue = entry.getValue();
+                moduleOptionsNode.add(optionName, optionValue);
+            }
+            securityModuleNode.get(OPERATION_HEADERS).get(ALLOW_RESOURCE_SERVICE_RESTART).set(true);
+            //operations.add(securityModuleNode);
+        }
+        operations.add(securityModuleNode);
+        return true;
     }
+        
 
     /**
      * Creates a {@link ModelNode} with configuration of the JSSE part of security domain.

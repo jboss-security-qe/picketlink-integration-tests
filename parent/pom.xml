@@ -6,6 +6,8 @@
 	<artifactId>picketlink-integration-tests-parent</artifactId>
 	<packaging>pom</packaging>
 	<properties>
+		<!--<pl.version>2.1.8-SNAPSHOT</pl.version>-->
+		<!--<version.picketlink>${pl.version}</version.picketlink>-->
 		<version.picketlink>2.1.8-SNAPSHOT</version.picketlink>
 		<version.picketlink.quickstarts>${version.picketlink}</version.picketlink.quickstarts>
 
@@ -28,8 +30,6 @@
 		<version.arquillian_drone>1.0.0.CR4</version.arquillian_drone>
 		<version.junit>4.8.1</version.junit>
 		<!-- Possible binaries and paths to find them. Feel free to override with export MAVEN_OPTS="-Dxx=yy" -->
-		<!--<eap5-dist-zip>jboss-eap-noauth-5.2.0-ER6.zip</eap5-dist-zip>
-		<eap5-dist-url>http://download.devel.redhat.com/devel/candidates/JBEAP/5.2.0.ER6/${eap5-dist-zip}</eap5-dist-url>-->
 		<eap5-dist-zip>jboss-eap-noauth-5.2.0.zip</eap5-dist-zip>
 		<eap5-dist-url>http://download.devel.redhat.com/released/JBEAP-5/5.2.0/zip/${eap5-dist-zip}</eap5-dist-url>
 		<eap5-dir-structure>jboss-eap-5.2/jboss-as</eap5-dir-structure>
@@ -38,6 +38,11 @@
 		<eap6-dist-url>http://download.devel.redhat.com/released/JBEAP-6/6.1.0/${eap6-dist-zip}</eap6-dist-url>
 		<!--<eap6-dir-structure>jboss-eap-6.0</eap6-dir-structure>-->
 		<eap6-dir-structure>jboss-eap-6.1</eap6-dir-structure>
+
+		<jbas7.dist.zip>jboss-as-${version.jboss_as7}.zip</jbas7.dist.zip>
+		<jbas6-dist-zip>jboss-as-distribution-6.0.0.Final.zip</jbas6-dist-zip>
+		<jbas5-dist-zip>jboss-5.1.0.GA-jdk6.zip</jbas5-dist-zip>
+		<tomcat6-dist-zip>apache-tomcat-6.0.26.zip</tomcat6-dist-zip>
 	</properties>
 
 	<dependencyManagement>

@@ -86,7 +86,7 @@
 		<binding.server>jboss-as7</binding.server>
 		<picketlink.binding>jbas7</picketlink.binding>		
 		<picketlink.skip.lib.copy>false</picketlink.skip.lib.copy>
-		<jbas7.dist.zip>jboss-as-${version.jboss_as7}.zip</jbas7.dist.zip>
+		<!--<jbas7.dist.zip>jboss-as-${version.jboss_as7}.zip</jbas7.dist.zip>-->
 		<jboss.as.home>${integration.tests.containers.dir}/jboss-as-${version.jboss_as7}</jboss.as.home>
 		<jboss.as.picketlink.lib.dir>${jboss.as.home}/modules/org/picketlink/main</jboss.as.picketlink.lib.dir>
 		<version.remoting3>3.2.3.GA</version.remoting3>
@@ -145,9 +145,29 @@
 				</executions>
 			</plugin>
 			<plugin>
+			    <groupId>org.apache.maven.plugins</groupId>
+			    <artifactId>maven-antrun-plugin</artifactId>
+			    <version>1.7</version>
+			    <executions>                
+				<execution>             
+				    <id>prepare</id>            
+				    <phase>process-test-classes</phase>
+				    <configuration>
+					<tasks>
+					    <echo message="prepare phase" />
+					    <unzip src="${dist.dir}/${jbas7.dist.zip}" dest="${integration.tests.dir}/containers" />
+					</tasks>
+				    </configuration>
+				    <goals>
+					<goal>run</goal>
+				    </goals>
+				</execution>				
+			    </executions>
+			</plugin>			
+			<!--<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-antrun-plugin</artifactId>
-			</plugin>
+			</plugin>-->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
@@ -212,42 +232,112 @@
 
 	<profiles>
 		<profile>
-			<id>jbas7.profile</id>
+			<id>copy-picketlink-from-maven</id>
 			<activation>
-			      	<activeByDefault>true</activeByDefault>
-    			</activation>
+                                <activeByDefault>true</activeByDefault>
+                        </activation>
 			<build>
 				<plugins>
-					<!-- This plugin execute some transformations in the standalone.xml fo 
-						the JBoss AS7 installation in order to run the integration tests. -->
+					<plugin>
+						<artifactId>maven-resources-plugin</artifactId>
+						<version>2.6</version>
+						<executions>
+							<execution>
+							    <id>copy-picketlink</id>
+							    <phase>test</phase>
+							    <goals>
+							    	<goal>copy-resources</goal>
+							    </goals>
+							    <configuration>
+								      <overwrite>true</overwrite>
+								      <outputDirectory>${jboss.as.picketlink.lib.dir}</outputDirectory>
+								      <resources>          
+										<resource>
+											<directory>${maven.repo.local}/org/picketlink/picketlink-core/${version.picketlink}</directory>
+											<includes>
+									  			<include>picketlink-core-${version.picketlink}.jar</include>
+											</includes>
+										</resource>
+										<resource>
+											<directory>${maven.repo.local}/org/picketlink/distribution/picketlink-${picketlink.binding}/${version.picketlink}</directory>
+											<includes>
+												<include>picketlink-${picketlink.binding}-${version.picketlink}.jar</include>
+											</includes>
+										</resource>
+								      </resources>              
+							    </configuration>            
+							</execution>
+							<execution>
+							    <id>copy-xacml</id>
+							    <phase>test</phase>
+							    <goals>
+							    	<goal>copy-resources</goal>
+							    </goals>
+							    <configuration>
+								      <overwrite>true</overwrite>
+								      <outputDirectory>${jboss.as.home}/modules/org/jboss/security/xacml/main</outputDirectory>
+								      <resources>          
+										<resource>
+											<directory>${maven.repo.local}/org/jboss/security/jbossxacml/2.0.8.Final</directory>
+											<includes>
+									  			<include>jbossxacml-2.0.8.Final.jar</include>
+											</includes>
+										</resource>					
+								      </resources>              
+							    </configuration>            
+							</execution>
+							<execution>
+							    <id>copy-xalan</id>
+							    <phase>test</phase>
+							    <goals>
+							    	<goal>copy-resources</goal>
+							    </goals>
+							    <configuration>
+								      <overwrite>true</overwrite>
+								      <outputDirectory>${jboss.as.home}/modules/org/apache/xalan/main</outputDirectory>
+								      <resources>          
+										<resource>
+											<directory>${maven.repo.local}/xalan/xalan/2.7.1</directory>
+											<includes>
+									  			<include>xalan-2.7.1.jar</include>
+											</includes>
+										</resource>					
+								      </resources>              
+							    </configuration>            
+							</execution>
+							<execution>
+							    <id>copy-picketlink-wstest</id>
+							    <phase>test</phase>
+							    <goals>
+							    	<goal>copy-resources</goal>
+							    </goals>
+							    <configuration>
+								      <overwrite>true</overwrite>
+								      <outputDirectory>${jboss.as.home}/modules/org/picketlink/main</outputDirectory>
+								      <resources>          
+										<resource>
+											<directory>${basedir}/../../unit-tests/trust/target/</directory>
+											<includes>
+									  			<include>picketlink-wstest-tests.jar</include>
+											</includes>
+										</resource>					
+								      </resources>              
+							    </configuration>            
+							</execution>
+						</executions>
+					</plugin>
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>xml-maven-plugin</artifactId>
-						<version>1.0</version>						
-						<executions>						
+						<version>1.0</version>
+						<executions>
 							<execution>
 								<phase>process-test-classes</phase>
 								<goals>
 									<goal>transform</goal>
 								</goals>
-								<configuration>									
+								<configuration>
 									<transformationSets>
-										<!--<transformationSet>
-											<dir>${jboss.as.home}/standalone/configuration/</dir>
-											<outputDir>${jboss.as.home}/standalone/configuration</outputDir>
-											<includes>
-												<include>standalone.xml</include>
-											</includes>
-											<stylesheet>src/test/resources/xslt/addSecurityDomain.xslt</stylesheet>
-										</transformationSet>-->
-<!-- 										<transformationSet> -->
-<!-- 											<dir>${jboss.as.home}/standalone/configuration/</dir> -->
-<!-- 											<outputDir>${jboss.as.home}/standalone/configuration</outputDir> -->
-<!-- 											<includes> -->
-<!-- 												<include>standalone.xml</include> -->
-<!-- 											</includes> -->
-<!-- 											<stylesheet>src/test/resources/xslt/changeBindingPorts.xslt</stylesheet> -->
-<!-- 										</transformationSet> -->
 		 								<transformationSet>
 											<dir>${jboss.as.home}/modules/org/picketlink/main</dir>
 											<outputDir>${jboss.as.home}/modules/org/picketlink/main</outputDir>
@@ -279,26 +369,111 @@
 												<include>module.xml</include>
 											</includes>
 											<stylesheet>src/test/resources/xslt/changeXalanModule.xslt</stylesheet>
-										</transformationSet>		
+										</transformationSet>
 									</transformationSets>
 								</configuration>
 							</execution>
 						</executions>
 					</plugin>
-				</plugins>			
+				</plugins>
 			</build>
 		</profile>
 		<profile>
-			<id>eap6.profile</id>
-			<activation>
-			      	<property>
-					<name>eap6</name>
-			      	</property>
-    			</activation>
+			<id>copy-picketlink-from-lib</id>
+			<!--<dependencies>
+				<dependency>
+		                        <groupId>org.picketlink</groupId>
+		                        <artifactId>picketlink-core</artifactId>
+		                                <version>${version.picketlink}</version>
+		                        <scope>system</scope>
+					<systemPath>${picketlink.dist.dir}/picketlink-core-${version.picketlink}.jar</systemPath>
+                        	</dependency>
+			</dependencies>-->
 			<build>
 				<plugins>
-					<!-- This plugin execute some transformations in the standalone.xml fo 
-						the JBoss AS7 installation in order to run the integration tests. -->
+					<plugin>
+						<artifactId>maven-resources-plugin</artifactId>
+						<version>2.6</version>
+						<executions>
+							<execution>
+							    <id>copy-resources</id>
+							    <phase>test</phase>
+							    <goals>
+							      	<goal>copy-resources</goal>
+							    </goals>								
+							    <configuration>
+								      <overwrite>true</overwrite>
+								      <outputDirectory>${jboss.as.picketlink.lib.dir}</outputDirectory>
+								      <resources>          
+										<resource>									
+											<directory>${picketlink.dist.dir}</directory>
+											<includes>
+									  			<include>picketlink-core-${version.picketlink}.jar</include>
+												<include>picketlink-${picketlink.binding}-${version.picketlink}.jar</include>
+											</includes>
+										</resource>								
+								      </resources>              
+							    </configuration>            
+							</execution>
+							<execution>
+							    <id>copy-xacml</id>
+							    <phase>test</phase>
+							    <goals>
+							    	<goal>copy-resources</goal>
+							    </goals>
+							    <configuration>
+								      <overwrite>true</overwrite>
+								      <outputDirectory>${jboss.as.home}/modules/org/jboss/security/xacml/main</outputDirectory>
+								      <resources>          
+										<resource>
+											<directory>${maven.repo.local}/org/jboss/security/jbossxacml/2.0.8.Final</directory>
+											<includes>
+									  			<include>jbossxacml-2.0.8.Final.jar</include>
+											</includes>
+										</resource>					
+								      </resources>              
+							    </configuration>            
+							</execution>
+							<execution>
+							    <id>copy-xalan</id>
+							    <phase>test</phase>
+							    <goals>
+							    	<goal>copy-resources</goal>
+							    </goals>
+							    <configuration>
+								      <overwrite>true</overwrite>
+								      <outputDirectory>${jboss.as.home}/modules/org/apache/xalan/main</outputDirectory>
+								      <resources>          
+										<resource>
+											<directory>${maven.repo.local}/xalan/xalan/2.7.1</directory>
+											<includes>
+									  			<include>xalan-2.7.1.jar</include>
+											</includes>
+										</resource>					
+								      </resources>              
+							    </configuration>            
+							</execution>
+							<execution>
+							    <id>copy-picketlink-wstest</id>
+							    <phase>test</phase>
+							    <goals>
+							    	<goal>copy-resources</goal>
+							    </goals>
+							    <configuration>
+								      <overwrite>true</overwrite>
+								      <outputDirectory>${jboss.as.home}/modules/org/picketlink/main</outputDirectory>
+								      <resources>          
+										<resource>
+											<directory>${basedir}/../../unit-tests/trust/target/</directory>
+											<includes>
+									  			<include>picketlink-wstest-tests.jar</include>
+											</includes>
+										</resource>					
+								      </resources>              
+							    </configuration>            
+							</execution>
+						</executions>
+					</plugin>
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>xml-maven-plugin</artifactId>
@@ -311,28 +486,149 @@
 								</goals>
 								<configuration>
 									<transformationSets>
-										<!--<transformationSet>
-											<dir>${jboss.as.home}/standalone/configuration/</dir>
-											<outputDir>${jboss.as.home}/standalone/configuration</outputDir>
+		 								<transformationSet>
+											<dir>${jboss.as.home}/modules/org/picketlink/main</dir>
+											<outputDir>${jboss.as.home}/modules/org/picketlink/main</outputDir>
 											<includes>
-												<include>standalone.xml</include>
+												<include>module.xml</include>
 											</includes>
-											<stylesheet>src/test/resources/xslt/addSecurityDomain.xslt</stylesheet>
-										</transformationSet>-->
-<!-- 										<transformationSet> -->
-<!-- 											<dir>${jboss.as.home}/standalone/configuration/</dir> -->
-<!-- 											<outputDir>${jboss.as.home}/standalone/configuration</outputDir> -->
-<!-- 											<includes> -->
-<!-- 												<include>standalone.xml</include> -->
-<!-- 											</includes> -->
-<!-- 											<stylesheet>src/test/resources/xslt/changeBindingPorts.xslt</stylesheet> -->
-<!-- 										</transformationSet> -->		
+											<stylesheet>src/test/resources/xslt/changePicketLinkModule.xslt</stylesheet>
+											<parameters>
+												<parameter>
+													<name>picketlink_version</name>
+													<value>${version.picketlink}</value>
+												</parameter>
+											</parameters>
+										</transformationSet>
+										<!--This should be removed when AS7 is updated the jbossxacml module 
+											is updated with 2.0.8-->
+										<transformationSet>
+											<dir>${jboss.as.home}/modules/org/jboss/security/xacml/main</dir>
+											<outputDir>${jboss.as.home}/modules/org/jboss/security/xacml/main</outputDir>
+											<includes>
+												<include>module.xml</include>
+											</includes>
+											<stylesheet>src/test/resources/xslt/changeJBossXACMLModule.xslt</stylesheet>
+										</transformationSet>
+										<transformationSet>
+											<dir>${jboss.as.home}/modules/org/apache/xalan/main</dir>
+											<outputDir>${jboss.as.home}/modules/org/apache/xalan/main</outputDir>
+											<includes>
+												<include>module.xml</include>
+											</includes>
+											<stylesheet>src/test/resources/xslt/changeXalanModule.xslt</stylesheet>
+										</transformationSet>
 									</transformationSets>
 								</configuration>
 							</execution>
 						</executions>
 					</plugin>
-				</plugins>			
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>skip-copy-picketlink</id>
+			<build>
+				<plugins>	
+					<plugin>
+						<artifactId>maven-resources-plugin</artifactId>
+						<version>2.6</version>
+						<executions>							
+							<execution>
+							    <id>copy-xacml</id>
+							    <phase>test</phase>
+							    <goals>
+							    	<goal>copy-resources</goal>
+							    </goals>
+							    <configuration>
+								      <overwrite>true</overwrite>
+								      <outputDirectory>${jboss.as.home}/modules/org/jboss/security/xacml/main</outputDirectory>
+								      <resources>          
+										<resource>
+											<directory>${maven.repo.local}/org/jboss/security/jbossxacml/2.0.8.Final</directory>
+											<includes>
+									  			<include>jbossxacml-2.0.8.Final.jar</include>
+											</includes>
+										</resource>					
+								      </resources>              
+							    </configuration>            
+							</execution>
+							<execution>
+							    <id>copy-xalan</id>
+							    <phase>test</phase>
+							    <goals>
+							    	<goal>copy-resources</goal>
+							    </goals>
+							    <configuration>
+								      <overwrite>true</overwrite>
+								      <outputDirectory>${jboss.as.home}/modules/org/apache/xalan/main</outputDirectory>
+								      <resources>          
+										<resource>
+											<directory>${maven.repo.local}/xalan/xalan/2.7.1</directory>
+											<includes>
+									  			<include>xalan-2.7.1.jar</include>
+											</includes>
+										</resource>					
+								      </resources>              
+							    </configuration>            
+							</execution>
+							<execution>
+							    <id>copy-picketlink-wstest</id>
+							    <phase>test</phase>
+							    <goals>
+							    	<goal>copy-resources</goal>
+							    </goals>
+							    <configuration>
+								      <overwrite>true</overwrite>
+								      <outputDirectory>${jboss.as.home}/modules/org/picketlink/main</outputDirectory>
+								      <resources>          
+										<resource>
+											<directory>${basedir}/../../unit-tests/trust/target/</directory>
+											<includes>
+									  			<include>picketlink-wstest-tests.jar</include>
+											</includes>
+										</resource>					
+								      </resources>              
+							    </configuration>            
+							</execution>
+						</executions>
+					</plugin>				
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>xml-maven-plugin</artifactId>
+						<version>1.0</version>
+						<executions>
+							<execution>
+								<phase>process-test-classes</phase>
+								<goals>
+									<goal>transform</goal>
+								</goals>
+								<configuration>
+									<transformationSets>
+										<!--This should be removed when AS7 is updated the jbossxacml module 
+											is updated with 2.0.8-->
+										<transformationSet>
+											<dir>${jboss.as.home}/modules/org/jboss/security/xacml/main</dir>
+											<outputDir>${jboss.as.home}/modules/org/jboss/security/xacml/main</outputDir>
+											<includes>
+												<include>module.xml</include>
+											</includes>
+											<stylesheet>src/test/resources/xslt/changeJBossXACMLModule.xslt</stylesheet>
+										</transformationSet>
+										<transformationSet>
+											<dir>${jboss.as.home}/modules/org/apache/xalan/main</dir>
+											<outputDir>${jboss.as.home}/modules/org/apache/xalan/main</outputDir>
+											<includes>
+												<include>module.xml</include>
+											</includes>
+											<stylesheet>src/test/resources/xslt/changeXalanModule.xslt</stylesheet>
+										</transformationSet>
+									</transformationSets>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
 			</build>
 		</profile>
 	</profiles>
