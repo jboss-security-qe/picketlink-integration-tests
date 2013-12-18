@@ -22,12 +22,15 @@
 package org.picketlink.test.trust.tests;
 
 import java.io.File;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.TargetsContainer;
 import org.jboss.shrinkwrap.api.ArchivePaths;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.picketlink.test.integration.util.TargetContainers;
 
 /**
@@ -48,6 +51,7 @@ public class STSWSClientAS7TestCase extends AbstractSTSWSClientTestCase {
         archive.addAsResource(new File("../../unit-tests/trust/target/test-classes/handlers.xml"));
         archive.addAsResource(new File("../../unit-tests/trust/target/test-classes/org/picketlink/test/trust/ws/WSTestBean.class"), ArchivePaths.create("org/picketlink/test/trust/ws/WSTestBean.class"));
         archive.addAsManifestResource(new File("../../unit-tests/trust/target/test-classes/jboss-deployment-structure.xml"));
+        archive.addAsManifestResource(new File("../../unit-tests/trust/target/test-classes/ws-testbean/jboss-webservices.xml"));
         
         archive.addAsResource(new File("../../unit-tests/trust/target/test-classes/props/sts-users.properties"), ArchivePaths.create("users.properties"));
         archive.addAsResource(new File("../../unit-tests/trust/target/test-classes/props/sts-roles.properties"), ArchivePaths.create("roles.properties"));
@@ -58,4 +62,10 @@ public class STSWSClientAS7TestCase extends AbstractSTSWSClientTestCase {
         return archive;
     }
     
+    @Deployment(name = "picketlink-sts", testable = false)
+    @TargetsContainer("jboss")
+    public static WebArchive createSTSDeployment() throws GeneralSecurityException, IOException {
+        return TrustTestsBase.createSTSDeployment();
+    }
+
 }

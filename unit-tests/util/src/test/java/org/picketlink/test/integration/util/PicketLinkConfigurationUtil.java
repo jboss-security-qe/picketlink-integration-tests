@@ -140,27 +140,16 @@ public class PicketLinkConfigurationUtil {
 
             jks.setCertificateEntry(alias, certificate);
 
-            File file = new File("/tmp/tmpjks.jks");
-
-            if (file.exists()) {
-                file.delete();
-            }
-
+            File file = File.createTempFile("tmpjks", "jks");
+            file.deleteOnExit();
+           
             FileOutputStream stream = new FileOutputStream(file);
 
             jks.store(stream, password);
 
             stream.close();
-
-            final FileInputStream fileInputStream = new FileInputStream("/tmp/tmpjks.jks");
-
             sp.delete(keystore.getPath());
-
-            sp.add(new Asset() {
-                public InputStream openStream() {
-                    return fileInputStream;
-                }
-            }, keystore.getPath());
+            sp.addAsWebResource(file, keystore.getPath());
         } catch (Exception e) {
             throw new RuntimeException("Error while adding a new alias to the keystore.", e);
         }
