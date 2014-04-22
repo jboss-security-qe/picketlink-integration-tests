@@ -96,7 +96,12 @@ public class MavenArtifactUtil {
     }
 
     private static MavenDependencyResolver getMavenArchiveResolver() {
-        return DependencyResolvers.use(MavenDependencyResolver.class);
+    	MavenDependencyResolver res = DependencyResolvers.use(MavenDependencyResolver.class);
+        String settings = System.getProperty("picketlink.ts.maven.user.settings");
+        if (settings != null && ! settings.isEmpty()) {
+            res = res.configureFrom(System.getProperty("picketlink.ts.maven.user.settings"));
+        }
+        return res;
     }
 
     public static Collection<JavaArchive> getArtifact(String gav) {

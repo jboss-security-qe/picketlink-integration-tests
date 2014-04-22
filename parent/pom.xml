@@ -169,7 +169,7 @@
 		</plugins>
 	</build>
 
-	<repositories>
+	<!--<repositories>
 		<repository>
 			<id>jboss-public-repository-group</id>
 			<name>JBoss Public Maven Repository Group</name>
@@ -205,6 +205,6 @@
 				<enabled>false</enabled>
 			</releases>
 		</repository>
-	</repositories>
+	</repositories>-->
 
 </project>

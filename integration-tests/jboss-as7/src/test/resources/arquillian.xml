@@ -15,6 +15,7 @@
 				-Demployee.url=http://localhost:8080/employee/
 				-Demployee-redirect-valve.url=http://localhost:8080/employee-redirect-valve/
 				-Demployee-sig.url=http://localhost:8080/employee-sig/
+				-Dpicketlink.ts.maven.user.settings=${picketlink.ts.maven.user.settings}
 				-XX:MaxPermSize=256m
 				-XX:+HeapDumpOnOutOfMemoryError</property>
 		</configuration>

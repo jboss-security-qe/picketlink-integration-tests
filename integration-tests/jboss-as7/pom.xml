@@ -13,6 +13,10 @@
 		<binding.server>jboss-as7</binding.server>
 		<picketlink.binding>jbas7</picketlink.binding>		
 		<picketlink.skip.lib.copy>true</picketlink.skip.lib.copy>
+
+		<!-- Settings for Maven resolver in the tests. See MavenArtifactUtil.getMavenArchiveResolver() method -->
+		<picketlink.ts.maven.user.settings></picketlink.ts.maven.user.settings>
+
 		<jbas7.dist.zip>jboss-eap-6.2.0.zip</jbas7.dist.zip>
 		<jboss.as.home>${integration.tests.containers.dir}/jboss-eap-6.2</jboss.as.home>
 		<jboss.as.picketlink.lib.dir>${jboss.as.home}/modules/system/layers/base/org/picketlink/main</jboss.as.picketlink.lib.dir>

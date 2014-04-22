@@ -93,6 +93,10 @@
 									<value>${settings.localRepository}</value>
 								</property>
 								<property>
+								    <name>picketlink.ts.maven.user.settings</name>
+								    <value>${picketlink.ts.maven.user.settings}</value>
+								</property>
+								<property>
 									<name>jbossas.startup.timeout</name>
 									<value>240</value>
 								</property>
