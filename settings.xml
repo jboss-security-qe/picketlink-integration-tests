@@ -3,6 +3,17 @@
 	<profiles>
 		<profile>
 			<id>jboss.repository</id>
+
+			<!--
+			    This profile must be active by default, otherwise the tests will fail using it. 
+			    See http://stackoverflow.com/questions/5309379/ why not to use activeByDefault
+			 -->
+			<activation> 
+				<property>
+					<name>!skipJbossRepository</name>
+				</property>
+			</activation>
+
 			<repositories>
 				<repository>
 					<id>jboss-public-repository-releases</id>
