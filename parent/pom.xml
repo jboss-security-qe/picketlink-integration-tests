@@ -134,6 +134,14 @@
 			<version>2.4</version>
 			<scope>test</scope>
 		</dependency>
+
+        <dependency>
+            <groupId>org.jboss.web</groupId>
+            <artifactId>jbossweb</artifactId>
+            <version>${version.jboss_as7}</version>
+            <scope>provided</scope>
+            <type>jar</type>
+        </dependency>
 		
 		<dependency>
 			<groupId>commons-lang</groupId>
