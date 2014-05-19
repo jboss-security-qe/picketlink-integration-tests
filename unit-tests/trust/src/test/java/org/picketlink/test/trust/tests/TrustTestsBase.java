@@ -52,8 +52,6 @@ public abstract class TrustTestsBase {
      * @throws GeneralSecurityException
      * @throws IOException
      */
-    @Deployment(name = "picketlink-sts", testable = false)
-    @TargetsContainer("jboss")
     public static WebArchive createSTSDeployment() throws GeneralSecurityException, IOException {
         return TestUtil.createSTSDeployment();
     }
