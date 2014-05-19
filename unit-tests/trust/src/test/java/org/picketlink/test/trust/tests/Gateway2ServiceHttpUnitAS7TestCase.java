@@ -55,7 +55,6 @@ import org.picketlink.test.trust.servlet.ServiceServlet;
  * @since Aug 29, 2012
  */
 
-@ServerSetup({})
 @RunWith(PicketLinkIntegrationTests.class)
 @TargetContainers({"jbas7","eap6"})
 public class Gateway2ServiceHttpUnitAS7TestCase extends Gateway2ServiceHttpUnitCommon {
@@ -115,7 +114,7 @@ public class Gateway2ServiceHttpUnitAS7TestCase extends Gateway2ServiceHttpUnitC
     @TargetsContainer("jboss")
     public static WebArchive createSTSDeployment() throws GeneralSecurityException, IOException {
         WebArchive sts = TrustTestsBase.createSTSDeployment();
-        PicketLinkConfigurationUtil.addSAML20TokenRoleAttributeProvider(sts, "/WEB-INF/classes/picketlink-sts.xml", "Role");
+        PicketLinkConfigurationUtil.addSAML20TokenRoleAttributeProvider(sts, "/WEB-INF/classes/picketlink.xml", "Role");
         //sts.as(ZipExporter.class).exportTo(new File("picketlink-sts.war"), true);
         return sts;
     }
