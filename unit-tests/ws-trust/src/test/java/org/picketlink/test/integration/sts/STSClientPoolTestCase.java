@@ -23,7 +23,10 @@
 package org.picketlink.test.integration.sts;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.HashSet;
@@ -49,7 +52,7 @@ import org.picketlink.test.integration.util.TargetContainers;
 @Ignore("bz-1069126")
 public class STSClientPoolTestCase extends AbstractWSTrustIntegrationTests {
 
-    private static int CLIENTS_NR = 10000;
+    private static int CLIENTS_NR = 1000;
 
     /**
      * Create STSClientFactory with negative pool size<br/>
@@ -57,6 +60,7 @@ public class STSClientPoolTestCase extends AbstractWSTrustIntegrationTests {
      */
     @Test
     public void testNegativePoolSize() {
+        STSClientFactory.getInstance().resetFactory();
         try {
             STSClientFactory.getInstance(-1);
         } catch (Exception e) {
@@ -72,6 +76,7 @@ public class STSClientPoolTestCase extends AbstractWSTrustIntegrationTests {
      */
     @Test
     public void testPoolDisabled() {
+        STSClientFactory.getInstance().resetFactory();
         final STSClientConfig stsClientConfig = createSTSClientConfig();
         final STSClientFactory fact = STSClientFactory.getInstance();
         Set<STSClient> stsClientSet = new HashSet<STSClient>();
@@ -87,13 +92,15 @@ public class STSClientPoolTestCase extends AbstractWSTrustIntegrationTests {
      */
     @Test
     public void testExceedingPoolLimit() {
+        STSClientFactory.getInstance().resetFactory();
         final int poolSize = 10;
 
         final STSClientConfig stsClientConfig = createSTSClientConfig();
         final STSClientFactory fact = STSClientFactory.getInstance(poolSize);
         Set<STSClient> stsClientSet = new HashSet<STSClient>();
+        fact.createPool(stsClientConfig);
         for (int i = 0; i < poolSize; i++) {
-            stsClientSet.add(fact.createPool(stsClientConfig));
+            stsClientSet.add(fact.getClient(stsClientConfig));
         }
         assertEquals("Wrong number of STS clients created", poolSize, stsClientSet.size());
         try {
@@ -111,6 +118,7 @@ public class STSClientPoolTestCase extends AbstractWSTrustIntegrationTests {
      */
     @Test
     public void testInitialPoolBiggerThanMaxSize() {
+        STSClientFactory.getInstance().resetFactory();
         final int maxPoolSize = 10;
         final int initClientSize = 100;
 
@@ -118,8 +126,8 @@ public class STSClientPoolTestCase extends AbstractWSTrustIntegrationTests {
         final STSClientFactory fact = STSClientFactory.getInstance(maxPoolSize);
 
         Set<STSClient> stsClientSet = new HashSet<STSClient>();
-        stsClientSet.add(fact.createPool(initClientSize, stsClientConfig));
-        for (int i = 1; i < maxPoolSize; i++) {
+        fact.createPool(initClientSize, stsClientConfig);
+        for (int i = 0; i < maxPoolSize; i++) {
             stsClientSet.add(fact.getClient(stsClientConfig));
         }
         assertEquals("Wrong number of STS clients created", maxPoolSize, stsClientSet.size());
@@ -138,10 +146,12 @@ public class STSClientPoolTestCase extends AbstractWSTrustIntegrationTests {
      */
     @Test
     public void testClientsReuse() {
+        STSClientFactory.getInstance().resetFactory();
         final int poolSize = 10;
 
         final STSClientConfig stsClientConfig = createSTSClientConfig();
         final STSClientFactory fact = STSClientFactory.getInstance(poolSize);
+        fact.createPool(poolSize, stsClientConfig);
 
         Set<STSClient> overAllSTSClientSet = new HashSet<STSClient>();
 
@@ -163,6 +173,7 @@ public class STSClientPoolTestCase extends AbstractWSTrustIntegrationTests {
      */
     @Test
     public void testMorePools() {
+        STSClientFactory.getInstance().resetFactory();
         assertNotSame(STSClientFactory.getInstance(10), STSClientFactory.getInstance(20));
         // TODO more tests here
     }
@@ -173,9 +184,11 @@ public class STSClientPoolTestCase extends AbstractWSTrustIntegrationTests {
      */
     @Test
     public void testReturnClientMoreTimes() {
+        STSClientFactory.getInstance().resetFactory();
         final STSClientConfig stsClientConfig = createSTSClientConfig();
         final STSClientFactory factory = STSClientFactory.getInstance(2);
-        final STSClient stsc = factory.createPool(stsClientConfig);
+        factory.createPool(stsClientConfig);
+        final STSClient stsc = factory.getClient(stsClientConfig);
 
         factory.returnClient(stsc);
         try {
@@ -193,17 +206,123 @@ public class STSClientPoolTestCase extends AbstractWSTrustIntegrationTests {
      */
     @Test
     public void testReturnNotPooledClient() {
-        final STSClientConfig stsClientConfig = createSTSClientConfig();
+        STSClientFactory.getInstance().resetFactory();
+        final STSClientConfig config = createSTSClientConfig();
         // get not pooled instance
-        final STSClient stsc = STSClientFactory.getInstance(0).createPool(stsClientConfig);
+        final STSClient stsc = new STSClient(config);
+
         // try to return the STSClient instance to a pool
+        final STSClientFactory fact = STSClientFactory.getInstance(10);
+        fact.createPool(config);
         try {
-            STSClientFactory.getInstance(10).returnClient(stsc);
+            fact.returnClient(stsc);
         } catch (Exception e) {
             // OK expected
             return;
         }
         fail("Returning STSClient to the pool should fail, because it was not retrieved from the pool");
+    }
+
+    /**
+     * Get an STSClient with pooling disabled<br/>
+     * Expected result: The call of <code>STSClientFactory.getInstance().getClient()</code> returns not-null client.
+     */
+    @Test
+    public void testSimpleGetClientCall() {
+        STSClientFactory.getInstance().resetFactory();
+        assertNotNull("STSClientFactory.getInstance().getClient() should not be empty", STSClientFactory.getInstance()
+                .getClient(createSTSClientConfig()));
+    }
+
+    /**
+     * Get an STSClient with pooling disabled<br/>
+     * Expected result: The call of <code>STSClientFactory.getInstance().getClient()</code> returns not-null client.
+     */
+    @Test
+    public void testDestroyPool() {
+        STSClientFactory.getInstance().resetFactory();
+
+        final STSClientConfig config = createSTSClientConfig();
+
+        // get a first factory with pooling enabled
+        final STSClientFactory fact = STSClientFactory.getInstance(10);
+        fact.createPool(config);
+        assertTrue("Destroyed ClientPool should not be available from STSClientFactory", STSClientFactory.getInstance(10)
+                .configExists(config));
+
+        // get the second factory with pooling disabled (simulate call from another application for instance)
+        STSClientFactory.getInstance(0);
+
+        // destroy pool for given config
+        fact.destroyPool(config);
+
+        assertFalse("Destroyed ClientPool should not be available from STSClientFactory", STSClientFactory.getInstance(10)
+                .configExists(config));
+    }
+
+    /**
+     * Test behavior of configExists method<br/>
+     * Expected result: depends on pool config
+     */
+    @Test
+    public void testConfigExists() {
+        final STSClientConfig config = createSTSClientConfig();
+        STSClientFactory fact = null;
+
+        STSClientFactory.getInstance().resetFactory();
+        fact = STSClientFactory.getInstance(10);
+        fact.createPool(config);
+        assertTrue("STSClientFactory.configExists should return true when pooling is enabled and createPool is called",
+                STSClientFactory.getInstance(10).configExists(config));
+
+        STSClientFactory.getInstance().resetFactory();
+        fact = STSClientFactory.getInstance(10);
+        assertFalse(
+                "STSClientFactory.configExists should return false when pooling is enabled and createPool was not yet called",
+                STSClientFactory.getInstance(10).configExists(config));
+
+        STSClientFactory.getInstance().resetFactory();
+        fact = STSClientFactory.getInstance(0);
+        assertFalse("STSClientFactory.configExists should return false when pooling is disabled (createPool not called)",
+                STSClientFactory.getInstance(10).configExists(config));
+
+        STSClientFactory.getInstance().resetFactory();
+        fact = STSClientFactory.getInstance(0);
+        fact.createPool(config);
+        assertFalse("STSClientFactory.configExists should return false when pooling is disabled (createPool called)",
+                STSClientFactory.getInstance(10).configExists(config));
+
+    }
+
+    /**
+     * Tests creating pools for different configs<br/>
+     * Expected result: pools for configurations should not affect each other.
+     */
+    @Test
+    public void testPoolsForSeveralConfigs() {
+        STSClientFactory.getInstance().resetFactory();
+
+        STSClientFactory fact = STSClientFactory.getInstance(10);
+        for (int i = 0; i < 20; i++) {
+            fact.createPool(10, createSTSClientConfig("test-" + i));
+        }
+    }
+
+    /**
+     * Tests what happens after decreasing pool size<br/>
+     * Expected result: TODO
+     */
+    @Test
+    public void testDecreasePoolSize() {
+        STSClientFactory.getInstance().resetFactory();
+
+        STSClientFactory fact = STSClientFactory.getInstance(10);
+        final STSClientConfig config = createSTSClientConfig();
+        fact.createPool(10, config);
+        STSClientFactory.getInstance(5);
+
+        // TODO more steps here - depends on PicketLink code changes post 2.5.3.SP8
+
     }
 
     // TODO: Check if there could be synchronization issues in the STSClientPool

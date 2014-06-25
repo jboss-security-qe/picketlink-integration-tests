@@ -95,4 +95,9 @@
 			</pluginRepositories>
 		</profile>
 	</profiles>
+
+    <!-- MavenDependencyResolver needs following part. -->
+	<activeProfiles>
+		<activeProfile>jboss.repository</activeProfile>
+	</activeProfiles>
 </settings>
