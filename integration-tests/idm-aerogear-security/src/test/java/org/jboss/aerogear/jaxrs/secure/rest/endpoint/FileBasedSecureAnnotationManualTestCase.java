@@ -37,7 +37,6 @@ public class FileBasedSecureAnnotationManualTestCase extends AbstractSecureAnnot
     @Test
     @InSequence(Integer.MIN_VALUE + 1)
     public void doSetupServer(@ArquillianResource ManagementClient managementClient) throws Exception {
-        controller.start(SERVER_QUALIFIER);
         InstallPicketLinkExtensionSetupTask.staticSetup(managementClient);
         InstallPicketLinkFileBasedSetupTask.staticSetup(managementClient);
         controller.stop(SERVER_QUALIFIER);
@@ -54,7 +53,6 @@ public class FileBasedSecureAnnotationManualTestCase extends AbstractSecureAnnot
     public void deploy(@ArquillianResource Deployer deployer) throws Exception {
         deployer.deploy(DEPLOYMENT_NAME);
     }
-
 
     @Test
     @InSequence(Integer.MAX_VALUE)

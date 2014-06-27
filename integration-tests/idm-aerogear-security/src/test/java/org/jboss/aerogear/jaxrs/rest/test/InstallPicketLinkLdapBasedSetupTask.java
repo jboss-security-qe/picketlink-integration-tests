@@ -20,7 +20,9 @@ public class InstallPicketLinkLdapBasedSetupTask implements ServerSetupTask {
 
     private static final Logger log = Logger.getLogger(InstallPicketLinkLdapBasedSetupTask.class.getSimpleName());
 
-    public static final String JNDI_PICKETLINK_LDAP_BASED_PARTITION_MANAGER = "java:jboss/picketlink/LdapBasedPartitionManager";
+    public static final String JNDI_PICKETLINK_LDAP_BASED_PARTITION_MANAGER = "picketlink/LdapBasedPartitionManager";
+
+    private static final int TEST_LDAP_SERVER_PORT = 10389;
 
     private LDAPTestUtil ldapUtil;
 
@@ -51,9 +53,10 @@ public class InstallPicketLinkLdapBasedSetupTask implements ServerSetupTask {
     public static LDAPTestUtil staticSetup(ManagementClient managementClient) throws Exception {
         log.log(Level.INFO, "Starting LDAP instance");
 
-        LDAPTestUtil res = new LDAPTestUtil(10389);
+        LDAPTestUtil res = new LDAPTestUtil(TEST_LDAP_SERVER_PORT);
         res.setup();
         res.importLDIF("../../integration-tests/idm-aerogear-security/target/test-classes/users.ldif");
+
         log.log(Level.INFO, "Installing LDAP Based Partition Manager into AS/EAP container");
 
         ModelNode identityManagement = Util.createAddOperation(PICKETLINK_LDAP);
@@ -62,11 +65,11 @@ public class InstallPicketLinkLdapBasedSetupTask implements ServerSetupTask {
         allowServiceRestart(identityManagement);
 
         ModelNode identityConfiguration = Util.createAddOperation(PICKETLINK_LDAP_CONF);
-//        identityConfiguration.get("name").set("picketlink-ldap-configuration");
+        identityConfiguration.get("name").set("picketlink-ldap-configuration");
         allowServiceRestart(identityConfiguration);
 
         ModelNode ldapStore = Util.createAddOperation(PICKETLINK_LDAP_CONF_STORE);
-        ldapStore.get("url").set("ldap://localhost:10389");
+        ldapStore.get("url").set("ldap://localhost:" + TEST_LDAP_SERVER_PORT);
         ldapStore.get("bind-dn").set("uid=admin,ou=system");
         ldapStore.get("bind-credential").set("secret");
         ldapStore.get("base-dn-suffix").set("dc=jboss,dc=org");
@@ -122,8 +125,10 @@ public class InstallPicketLinkLdapBasedSetupTask implements ServerSetupTask {
         allowServiceRestart(grantMapping);
 
         ModelNode op = ModelUtil.createCompositeNode(
-          identityManagement, identityConfiguration,
-          ldapStore, supportedTypes,
+          identityManagement,
+          identityConfiguration,
+          ldapStore,
+          supportedTypes,
           identityType, relationshipType,
           agentMapping, agentMappingAttr,
           userMapping, userMappingAttr1, userMappingAttr2, userMappingAttr3, userMappingAttr4,
@@ -145,7 +150,7 @@ public class InstallPicketLinkLdapBasedSetupTask implements ServerSetupTask {
         PathAddress address = PICKETLINK_LDAP_CONF_STORE.append(PathElement.pathElement("mapping", className));
 
         ModelNode node = Util.createAddOperation(address);
-        node.get("class").set(className);
+        node.get("class-name").set(className);
 
         return node;
     }
@@ -166,10 +171,10 @@ public class InstallPicketLinkLdapBasedSetupTask implements ServerSetupTask {
 
     private static ModelNode addLdapSupportedType(Class<?> clazz) {
         String className = clazz.getName();
-        PathAddress address = PICKETLINK_LDAP_CONF_STORE_SUPPORTEDTYPES.append(PathElement.pathElement("supportedType", className));
+        PathAddress address = PICKETLINK_LDAP_CONF_STORE_SUPPORTEDTYPES.append(PathElement.pathElement("supported-type", className));
 
         ModelNode node = Util.createAddOperation(address);
-        node.get("class").set(className);
+        node.get("class-name").set(className);
         return node;
     }
 
@@ -180,19 +185,10 @@ public class InstallPicketLinkLdapBasedSetupTask implements ServerSetupTask {
 
         log.log(Level.INFO, "Deinstalling LDAP Based Partition Manager from AS/EAP container");
 
-        ModelNode step0 = Util.createRemoveOperation(PICKETLINK_LDAP_CONF_STORE_SUPPORTEDTYPES);
-        allowServiceRestart(step0);
-        ModelNode step1 = Util.createRemoveOperation(PICKETLINK_LDAP_CONF_STORE);
-        allowServiceRestart(step1);
-        ModelNode step2 = Util.createRemoveOperation(PICKETLINK_LDAP_CONF);
-        allowServiceRestart(step2);
         ModelNode step3 = Util.createRemoveOperation(PICKETLINK_LDAP);
         allowServiceRestart(step3);
 
-        ModelNode op = ModelUtil.createCompositeNode(step0, step1, step2, step3);
-        // remove picketlink subsystem
-
-        boolean success = ModelUtil.execute(managementClient, op);
+        boolean success = ModelUtil.execute(managementClient, step3);
         log.log(success ? Level.INFO : Level.WARNING, "Deinstalling LDAP Based Partition Manager into AS/EAP container {0}",
                 new Object[] { success ? "passed" : "failed" });
     }

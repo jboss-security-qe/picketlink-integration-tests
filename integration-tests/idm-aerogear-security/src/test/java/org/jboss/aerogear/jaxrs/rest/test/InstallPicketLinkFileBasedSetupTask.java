@@ -21,7 +21,7 @@ public class InstallPicketLinkFileBasedSetupTask implements ServerSetupTask {
 
     private static final Logger log = Logger.getLogger(InstallPicketLinkFileBasedSetupTask.class.getSimpleName());
 
-    public static final String JNDI_PICKETLINK_FILE_BASED_PARTITION_MANAGER = "java:jboss/picketlink/FileBasedPartitionManager";
+    public static final String JNDI_PICKETLINK_FILE_BASED_PARTITION_MANAGER = "picketlink/FileBasedPartitionManager";
 
     private static final PathAddress PICKETLINK_FILES = PathAddress.pathAddress(
       PathElement.pathElement(SUBSYSTEM, "picketlink-identity-management"),

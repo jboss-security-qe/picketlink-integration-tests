@@ -43,7 +43,6 @@ public class LdapBasedSecureAnnotationManualTestCase extends AbstractSecureAnnot
     @Test
     @InSequence(Integer.MIN_VALUE + 1)
     public void doSetupServer(@ArquillianResource ManagementClient managementClient) throws Exception {
-        controller.start(SERVER_QUALIFIER);
         InstallPicketLinkExtensionSetupTask.staticSetup(managementClient);
         ldapTestUtil = InstallPicketLinkLdapBasedSetupTask.staticSetup(managementClient);
         controller.stop(SERVER_QUALIFIER);
