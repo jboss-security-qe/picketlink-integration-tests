@@ -14,7 +14,7 @@ target
 *.iws
 .idea
 # ignore NetBeans files
-nbactions.xml
+nbactions*.xml
 nb-configuration.xml
 catalog.xml
 #
