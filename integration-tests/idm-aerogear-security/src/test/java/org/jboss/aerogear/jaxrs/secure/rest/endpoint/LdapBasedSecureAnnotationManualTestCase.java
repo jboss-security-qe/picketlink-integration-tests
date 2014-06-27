@@ -16,6 +16,7 @@ import org.picketlink.test.integration.util.TargetContainers;
 
 import java.io.File;
 import java.util.logging.Logger;
+import org.jboss.aerogear.jaxrs.rest.test.InstallPicketLinkExtensionSetupTask;
 
 /**
  * Created by hmlnarik on 1/17/14.
@@ -43,6 +44,7 @@ public class LdapBasedSecureAnnotationManualTestCase extends AbstractSecureAnnot
     @InSequence(Integer.MIN_VALUE + 1)
     public void doSetupServer(@ArquillianResource ManagementClient managementClient) throws Exception {
         controller.start(SERVER_QUALIFIER);
+        InstallPicketLinkExtensionSetupTask.staticSetup(managementClient);
         ldapTestUtil = InstallPicketLinkLdapBasedSetupTask.staticSetup(managementClient);
         controller.stop(SERVER_QUALIFIER);
     }
@@ -64,6 +66,7 @@ public class LdapBasedSecureAnnotationManualTestCase extends AbstractSecureAnnot
     public void tearDownClass(@ArquillianResource Deployer deployer, @ArquillianResource ManagementClient managementClient) throws Exception {
         deployer.undeploy(DEPLOYMENT_NAME);
         InstallPicketLinkLdapBasedSetupTask.staticTearDown(managementClient, ldapTestUtil);
+        InstallPicketLinkExtensionSetupTask.staticTearDown(managementClient);
         ldapTestUtil = null;
         controller.stop(SERVER_QUALIFIER);
     }

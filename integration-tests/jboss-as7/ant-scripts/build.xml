@@ -19,13 +19,6 @@
         <delete dir="${jboss.as.home}" quiet="true" />
 		<unzip src="${basedir}/dist/${jbas7.dist.zip}" dest="${integration.tests.dir}/containers" />
 		<chmod dir="${integration.tests.dir}/containers" perm="ugo+rx" includes="**/*.sh" />
-
-        <xslt style="${basedir}/src/test/resources/xslt/addPicketlinkExtension.xsl"
-              in="${jboss.as.home}/standalone/configuration/standalone.xml"
-              out="${jboss.as.home}/standalone/configuration/standalone2.xml" />
-        <move file="${jboss.as.home}/standalone/configuration/standalone2.xml"
-              tofile="${jboss.as.home}/standalone/configuration/standalone.xml"
-              overwrite="true" />
     </target>
 
     <target name="install-picketlink" if="${picketlink.installer}">
@@ -49,14 +42,12 @@
 
 
         <!-- Required to convince tests to find PicketLink. Remove once this is fixed in installer. -->
-<!--
               <xslt style="${basedir}/src/test/resources/xslt/addPicketlinkExtension.xsl"
               in="${jboss.as.home}/standalone/configuration/standalone.xml"
               out="${jboss.as.home}/standalone/configuration/standalone2.xml" />
         <move file="${jboss.as.home}/standalone/configuration/standalone2.xml"
               tofile="${jboss.as.home}/standalone/configuration/standalone.xml"
               overwrite="true" />
--->
     </target>
 
 </project>

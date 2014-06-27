@@ -89,7 +89,7 @@ public class InstallPicketLinkFileBasedSetupTask implements ServerSetupTask {
 //        log.log(Level.INFO, "Installing File Based Partition Manager into AS/EAP container {0}",
 //                new Object[] { res.toJSONString(true) });
         boolean success = ModelUtil.execute(managementClient, op);
-        log.log(success ? Level.INFO : Level.WARNING, "Command: {0}", op.asString());
+//        log.log(success ? Level.INFO : Level.WARNING, "Command: {0}", op.asString());
         log.log(success ? Level.INFO : Level.WARNING, "Installing File Based Partition Manager into AS/EAP container {0}",
                 new Object[] { success ? "passed" : "failed" });
     }
@@ -104,7 +104,7 @@ public class InstallPicketLinkFileBasedSetupTask implements ServerSetupTask {
         ModelNode op = ModelUtil.createCompositeNode(/*step0, step1, step2, */step3);
 
         boolean success = ModelUtil.execute(managementClient, op);
-        log.log(success ? Level.INFO : Level.WARNING, "Deinstalling File Based Partition Manager into AS/EAP container {0}",
+        log.log(success ? Level.INFO : Level.WARNING, "Deinstalling File Based Partition Manager from AS/EAP container {0}",
                 new Object[] { success ? "passed" : "failed" });
     }
 
