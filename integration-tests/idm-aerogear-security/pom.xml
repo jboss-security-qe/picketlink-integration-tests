@@ -13,8 +13,8 @@
 
     <properties>
         <!-- AeroGear Security -->
-        <version.aerogear.security>1.2.1</version.aerogear.security>
-        <version.aerogear.security.picketlink>1.2.2</version.aerogear.security.picketlink>
+        <version.aerogear.security>1.3.1</version.aerogear.security>
+        <version.aerogear.security.picketlink>1.3.1</version.aerogear.security.picketlink>
 
         <com.jayway.restassured.version>1.8.1</com.jayway.restassured.version>
     </properties>
@@ -133,14 +133,14 @@
             <groupId>org.picketbox</groupId>
             <artifactId>picketbox-ldap</artifactId>
             <version>1.0.2.Final</version>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.picketbox</groupId>
             <artifactId>picketbox-ldap</artifactId>
             <version>1.0.2.Final</version>
-            <scope>compile</scope>
+            <scope>provided</scope>
             <type>test-jar</type>
         </dependency>
 

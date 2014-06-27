@@ -2,7 +2,7 @@
 <!-- XSLT file to add the a the PicketLink Extension to the standalone.xml 
 	of the JBoss AS7 installation. -->
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-	xmlns:as="urn:jboss:domain:1.5" version="1.0">
+	xmlns:as="urn:jboss:domain:1.6" version="1.0">
 
 	<xsl:output method="xml" indent="yes" />
 
@@ -10,14 +10,14 @@
 	<xsl:template match="//as:server/as:extensions">
 		<extensions>
 			<xsl:apply-templates select="@* | *" />
-            <extension module="org.picketlink.as.extension"/>
+            <extension module="org.wildfly.extension.picketlink"/>
         </extensions>
 	</xsl:template>
 
 	<xsl:template match="//as:server/as:profile">
 		<profile>
 			<xsl:apply-templates select="@* | *" />
-            <subsystem xmlns="urn:jboss:domain:picketlink:1.0" />
+            <subsystem xmlns="urn:jboss:domain:picketlink-identity-management:1.0" />
         </profile>
 	</xsl:template>
 

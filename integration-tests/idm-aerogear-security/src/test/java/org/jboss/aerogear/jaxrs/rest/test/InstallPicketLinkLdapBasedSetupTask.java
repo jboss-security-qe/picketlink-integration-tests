@@ -25,12 +25,12 @@ public class InstallPicketLinkLdapBasedSetupTask implements ServerSetupTask {
     private LDAPTestUtil ldapUtil;
 
     private static final PathAddress PICKETLINK_LDAP = PathAddress.pathAddress(
-      PathElement.pathElement(SUBSYSTEM, "picketlink"),
-      PathElement.pathElement("identity-management", "picketlink-ldap")
+      PathElement.pathElement(SUBSYSTEM, "picketlink-identity-management"),
+      PathElement.pathElement("partition-manager", "picketlink-ldap")
     );
     private static final PathAddress PICKETLINK_LDAP_CONF = PICKETLINK_LDAP.append(PathElement.pathElement("identity-configuration", "picketlink-ldap-configuration"));
     private static final PathAddress PICKETLINK_LDAP_CONF_STORE = PICKETLINK_LDAP_CONF.append(PathElement.pathElement("ldap-store", "ldap-store"));
-    private static final PathAddress PICKETLINK_LDAP_CONF_STORE_SUPPORTEDTYPES = PICKETLINK_LDAP_CONF_STORE.append(PathElement.pathElement("supportedTypes", "supportedTypes"));
+    private static final PathAddress PICKETLINK_LDAP_CONF_STORE_SUPPORTEDTYPES = PICKETLINK_LDAP_CONF_STORE.append(PathElement.pathElement("supported-types", "supported-types"));
 
     @Override
     public void setup(ManagementClient managementClient, String containerId) throws Exception {
@@ -57,12 +57,12 @@ public class InstallPicketLinkLdapBasedSetupTask implements ServerSetupTask {
         log.log(Level.INFO, "Installing LDAP Based Partition Manager into AS/EAP container");
 
         ModelNode identityManagement = Util.createAddOperation(PICKETLINK_LDAP);
-        identityManagement.get("alias").set("picketlink-ldap");
+//        identityManagement.get("alias").set("picketlink-ldap");
         identityManagement.get("jndi-name").set(JNDI_PICKETLINK_LDAP_BASED_PARTITION_MANAGER);
         allowServiceRestart(identityManagement);
 
         ModelNode identityConfiguration = Util.createAddOperation(PICKETLINK_LDAP_CONF);
-        identityConfiguration.get("name").set("picketlink-ldap-configuration");
+//        identityConfiguration.get("name").set("picketlink-ldap-configuration");
         allowServiceRestart(identityConfiguration);
 
         ModelNode ldapStore = Util.createAddOperation(PICKETLINK_LDAP_CONF_STORE);
@@ -73,7 +73,7 @@ public class InstallPicketLinkLdapBasedSetupTask implements ServerSetupTask {
         allowServiceRestart(ldapStore);
 
         ModelNode supportedTypes = Util.createAddOperation(PICKETLINK_LDAP_CONF_STORE_SUPPORTEDTYPES);
-//        supportedTypes.get("supportsAll").set(false);
+        supportedTypes.get("supports-all").set(false);
         allowServiceRestart(supportedTypes);
 
         ModelNode identityType = addLdapSupportedType(org.picketlink.idm.model.IdentityType.class);

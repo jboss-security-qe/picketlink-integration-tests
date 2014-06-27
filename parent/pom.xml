@@ -28,7 +28,7 @@
 		<version.arqillian_jboss_as>7.2.0.Final</version.arqillian_jboss_as>
 		<version.arquillian>1.0.1.Final</version.arquillian>
 		<version.arquillian_drone>1.0.1.Final</version.arquillian_drone>
-		<version.arquillian.rest.extension>1.0.0.Final-SNAPSHOT</version.arquillian.rest.extension>
+		<version.arquillian.rest.extension>1.0.0.Alpha2</version.arquillian.rest.extension>
 		<version.junit>4.8.1</version.junit>
 		<version.com.jayway.restassured>1.8.1</version.com.jayway.restassured>
 		<version.resteasy>2.3.7.Final</version.resteasy>

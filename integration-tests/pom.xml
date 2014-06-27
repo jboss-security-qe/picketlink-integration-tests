@@ -106,6 +106,10 @@
                                     <name>arquillian.container</name>
                                     <value>server-manual</value>
                                 </property>
+                                <property>
+                                    <name>smproperty</name>
+                                    <value>${smproperty}</value>
+                                </property>
                             </systemProperties>
                             <reportNameSuffix>SAML-${binding.server}</reportNameSuffix>
                         </configuration>
