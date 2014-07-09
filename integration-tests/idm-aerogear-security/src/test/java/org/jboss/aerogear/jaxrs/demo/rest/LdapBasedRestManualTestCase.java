@@ -1,6 +1,7 @@
 package org.jboss.aerogear.jaxrs.demo.rest;
 
 import org.jboss.aerogear.jaxrs.rest.producer.PicketLinkLdapIdmUsers;
+import org.jboss.aerogear.jaxrs.rest.test.InstallPicketLinkExtensionSetupTask;
 import org.jboss.aerogear.jaxrs.rest.test.InstallPicketLinkLdapBasedSetupTask;
 import org.jboss.aerogear.jaxrs.rest.test.LDAPTestUtil;
 import org.jboss.arquillian.container.test.api.*;
@@ -39,7 +40,7 @@ public class LdapBasedRestManualTestCase extends AbstractRestTest {
     @Test
     @InSequence(Integer.MIN_VALUE + 1)
     public void doSetupServer(@ArquillianResource ManagementClient managementClient) throws Exception {
-        controller.start(SERVER_QUALIFIER);
+        InstallPicketLinkExtensionSetupTask.staticSetup(managementClient);
         ldapTestUtil = InstallPicketLinkLdapBasedSetupTask.staticSetup(managementClient);
         controller.stop(SERVER_QUALIFIER);
     }
@@ -62,6 +63,7 @@ public class LdapBasedRestManualTestCase extends AbstractRestTest {
     public void tearDownClass(@ArquillianResource Deployer deployer, @ArquillianResource ManagementClient managementClient) throws Exception {
         deployer.undeploy(DEPLOYMENT_NAME);
         InstallPicketLinkLdapBasedSetupTask.staticTearDown(managementClient, ldapTestUtil);
+        InstallPicketLinkExtensionSetupTask.staticTearDown(managementClient);
         controller.stop(SERVER_QUALIFIER);
     }
 

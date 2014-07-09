@@ -2,6 +2,7 @@ package org.jboss.aerogear.jaxrs.demo.rest;
 
 import org.jboss.aerogear.jaxrs.rest.producer.PicketLinkDefaultUsers;
 import org.jboss.aerogear.jaxrs.rest.producer.PicketLinkFileIdmUsers;
+import org.jboss.aerogear.jaxrs.rest.test.InstallPicketLinkExtensionSetupTask;
 import org.jboss.aerogear.jaxrs.rest.test.InstallPicketLinkFileBasedSetupTask;
 import org.jboss.arquillian.container.test.api.*;
 import org.jboss.arquillian.junit.InSequence;
@@ -37,7 +38,7 @@ public class FileBasedRestManualTestCase extends AbstractRestTest {
     @Test
     @InSequence(Integer.MIN_VALUE + 1)
     public void doSetupServer(@ArquillianResource ManagementClient managementClient) throws Exception {
-        controller.start(SERVER_QUALIFIER);
+        InstallPicketLinkExtensionSetupTask.staticSetup(managementClient);
         InstallPicketLinkFileBasedSetupTask.staticSetup(managementClient);
         controller.stop(SERVER_QUALIFIER);
     }
@@ -60,6 +61,7 @@ public class FileBasedRestManualTestCase extends AbstractRestTest {
     public void tearDownClass(@ArquillianResource Deployer deployer, @ArquillianResource ManagementClient managementClient) throws Exception {
         deployer.undeploy(DEPLOYMENT_NAME);
         InstallPicketLinkFileBasedSetupTask.staticTearDown(managementClient);
+        InstallPicketLinkExtensionSetupTask.staticTearDown(managementClient);
         controller.stop(SERVER_QUALIFIER);
     }
 
