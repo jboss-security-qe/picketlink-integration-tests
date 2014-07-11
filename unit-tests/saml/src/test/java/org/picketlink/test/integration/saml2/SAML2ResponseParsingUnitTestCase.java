@@ -38,6 +38,9 @@ import com.meterware.httpunit.GetMethodWebRequest;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
+import org.hamcrest.CoreMatchers;
+import org.junit.Assume;
+import org.picketlink.test.integration.util.TestUtil;
 
 /**
  * Test for parsing the SAML2 Response
@@ -53,6 +56,9 @@ public class SAML2ResponseParsingUnitTestCase extends AbstractSAMLIntegrationTes
      */
     @Test
     public void testADFSClaims() throws Exception {
+        // Only run this test if the testcase is not run in PL 2.1 backward-compatibility mode
+        Assume.assumeThat(TestUtil.isPicketLink21CompatibilityRun(), CoreMatchers.is(false));
+
         WebRequest serviceRequest1 = new GetMethodWebRequest(getTargetURL("/claims/claimsprocess.jsp"));
         WebConversation webConversation = new WebConversation();
 

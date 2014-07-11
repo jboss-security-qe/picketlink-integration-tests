@@ -37,8 +37,11 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.util.EntityUtils;
+import org.hamcrest.CoreMatchers;
 import org.jboss.logging.Logger;
+import org.junit.Assume;
 import org.junit.Test;
+import org.picketlink.test.integration.util.TestUtil;
 import org.picketlink.test.trust.servlet.ServiceServlet;
 
 /**
@@ -57,6 +60,9 @@ public abstract class Gateway2ServiceHttpUnitCommon extends TrustTestsBase {
 
     @Test
     public void testG2S_http_compressedTokenScenario() throws Exception {
+        // Only run this test if the testcase is not run in PL 2.1 backward-compatibility mode
+        Assume.assumeThat(TestUtil.isPicketLink21CompatibilityRun(), CoreMatchers.is(false));
+
         String encodedURL = java.net.URLEncoder.encode(getTargetURL("/service/incoming"), "UTF-8");
         log.debug("encoded target URL="+encodedURL);
         assertServiceApp("/gateway/request?action=forward&serviceServerUrl=" + getTargetURL("/service/incoming") + "&compression=true", "UserA", "PassA");

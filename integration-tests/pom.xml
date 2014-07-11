@@ -105,6 +105,10 @@
 									<value>90</value>
 								</property>
 								<property>
+									<name>test.picketlink21.compatibility.run</name>
+									<value>${test.picketlink21.compatibility.run}</value>
+								</property>
+								<property>
 									<name>JAVA_OPTS</name>
 									<value>${env.JAVA_OPTS}</value>
 								</property>

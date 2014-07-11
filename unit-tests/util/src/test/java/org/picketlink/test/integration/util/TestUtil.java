@@ -22,6 +22,7 @@
 
 package org.picketlink.test.integration.util;
 
+import org.apache.commons.lang.StringUtils;
 import static org.picketlink.test.integration.util.PicketLinkConfigurationUtil.addKeyStoreAlias;
 import static org.picketlink.test.integration.util.PicketLinkConfigurationUtil.addValidatingAlias;
 
@@ -35,6 +36,7 @@ public class TestUtil {
 
     private static final String TEST_CONTAINER_BIND_ADDRESS = "test.container.bind.address";
     private static final String TEST_CONTAINER_BIND_HTTP_PORT = "test.container.bind.http.port";
+    private static final String TEST_PICKETLINK21_COMPATIBILITY_RUN = "test.picketlink21.compatibility.run";
 
     public static String getTargetURL(String uri) {
         return "http://" + getServerAddress() + ":" + System.getProperty(TEST_CONTAINER_BIND_HTTP_PORT, "8080") + uri;
@@ -54,6 +56,17 @@ public class TestUtil {
         addKeyStoreAlias(sts, "/WEB-INF/classes/sts_keystore.jks", "sts", "testpass", getServerAddress());
 
         return sts;
+    }
+
+    /**
+     * Returns true if the current execution is done for checking backward
+     * compatibility of PicketLink 2.5 with older PL 2.1.
+     * <p>
+     * This is done by checking whether system property {@code test.picketlink21.compatibility.run}
+     * is set to {@code true}.
+     */
+    public static boolean isPicketLink21CompatibilityRun() {
+        return StringUtils.equalsIgnoreCase("true", System.getProperty(TEST_PICKETLINK21_COMPATIBILITY_RUN));
     }
 
 }

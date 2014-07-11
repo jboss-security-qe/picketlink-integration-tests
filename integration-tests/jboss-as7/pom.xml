@@ -17,7 +17,13 @@
 		<!-- Settings for Maven resolver in the tests. See MavenArtifactUtil.getMavenArchiveResolver() method -->
 		<picketlink.ts.maven.user.settings></picketlink.ts.maven.user.settings>
 
+        <!-- Settings for Maven resolver in the tests. See MavenArtifactUtil.getMavenArchiveResolver() method -->
+        <picketlink.ts.maven.user.settings></picketlink.ts.maven.user.settings>
+
+        <!-- Name of the EAP zip distribution file -->
 		<jbas7.dist.zip>jboss-eap-6.2.0.zip</jbas7.dist.zip>
+
+        <!-- Root of the extracted EAP installation -->
 		<jboss.as.home>${integration.tests.containers.dir}/jboss-eap-6.2</jboss.as.home>
 		<jboss.as.picketlink.lib.dir>${jboss.as.home}/modules/system/layers/base/org/picketlink/main</jboss.as.picketlink.lib.dir>
 		<version.jboss-client>${version.jboss_as7}</version.jboss-client>
