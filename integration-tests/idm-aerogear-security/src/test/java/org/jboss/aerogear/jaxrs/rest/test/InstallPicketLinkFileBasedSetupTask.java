@@ -31,6 +31,9 @@ public class InstallPicketLinkFileBasedSetupTask implements ServerSetupTask {
     private static final PathAddress PICKETLINK_FILES_CONF_STORE = PICKETLINK_FILES_CONF.append(PathElement.pathElement("file-store", "file-store"));
     private static final PathAddress PICKETLINK_FILES_CONF_STORE_SUPPORTED = PICKETLINK_FILES_CONF_STORE.append(PathElement.pathElement("supported-types", "supported-types"));
 
+    private static final String PICKETLINK_TEMP_PATH_NAME = "picketlink-file-store-path";
+    private static final PathAddress JBOSS_PATH = PathAddress.EMPTY_ADDRESS.append(PathElement.pathElement("path", PICKETLINK_TEMP_PATH_NAME));
+
     @Override
     public void setup(ManagementClient managementClient, String containerId) throws Exception {
         staticSetup(managementClient);
@@ -59,6 +62,9 @@ public class InstallPicketLinkFileBasedSetupTask implements ServerSetupTask {
         log.log(Level.INFO, "Installing File Based Partition Manager into AS/EAP container using working dir {0}",
                 workingDir.getAbsolutePath());
 
+        ModelNode stepPath = Util.createAddOperation(JBOSS_PATH);
+        stepPath.get("path").set(workingDir.getParentFile().getAbsolutePath());
+
         ModelNode step1 = Util.createAddOperation(PICKETLINK_FILES);
 //        step1.get("alias").set("picketlink-files");
         step1.get("jndi-name").set(JNDI_PICKETLINK_FILE_BASED_PARTITION_MANAGER);
@@ -73,14 +79,15 @@ public class InstallPicketLinkFileBasedSetupTask implements ServerSetupTask {
         step3.get("async-write").set(true);
         step3.get("async-write-thread-pool").set(10);
         step3.get("support-attribute").set(true);
-        step3.get("working-dir").set(workingDir.getAbsolutePath());
+        step3.get("working-dir").set(workingDir.getName());
+        step3.get("relative-to").set(PICKETLINK_TEMP_PATH_NAME);
         allowServiceRestart(step3);
 
         ModelNode step4 = Util.createAddOperation(PICKETLINK_FILES_CONF_STORE_SUPPORTED);
         step4.get("supports-all").set(true);
         allowServiceRestart(step4);
 
-        ModelNode op = ModelUtil.createCompositeNode(step1, step2, step3, step4);
+        ModelNode op = ModelUtil.createCompositeNode(stepPath, step1, step2, step3, step4);
 //        ModelNode op = ModelUtil.createCompositeNode(step1, step2, step3);
 
         // add picketlink subsystem
@@ -97,11 +104,14 @@ public class InstallPicketLinkFileBasedSetupTask implements ServerSetupTask {
     public static void staticTearDown(ManagementClient managementClient) throws Exception {
         log.log(Level.INFO, "Deinstalling File Based Partition Manager from AS/EAP container");
 
+        ModelNode stepPath = Util.createRemoveOperation(JBOSS_PATH);
+        allowServiceRestart(stepPath);
+
         ModelNode step3 = Util.createRemoveOperation(PICKETLINK_FILES);
         allowServiceRestart(step3);
 
         // remove picketlink subsystem
-        ModelNode op = ModelUtil.createCompositeNode(/*step0, step1, step2, */step3);
+        ModelNode op = ModelUtil.createCompositeNode(/*step0, step1, step2, */step3, stepPath);
 
         boolean success = ModelUtil.execute(managementClient, op);
         log.log(success ? Level.INFO : Level.WARNING, "Deinstalling File Based Partition Manager from AS/EAP container {0}",
