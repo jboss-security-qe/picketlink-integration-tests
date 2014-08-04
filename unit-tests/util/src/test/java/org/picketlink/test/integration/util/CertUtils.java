@@ -104,7 +104,11 @@ public class CertUtils {
         Method certAndKeyGen_generate, certAndKeyGen_getPrivateKey, certAndKeyGen_getSelfCertificate;
 
         if (isIbmJava()) {
-            certAndKeyGenClass = Class.forName("com.ibm.security.x509.CertAndKeyGen");
+            try {
+                certAndKeyGenClass = Class.forName("com.ibm.security.x509.CertAndKeyGen");
+            } catch (ClassNotFoundException e) {
+                certAndKeyGenClass = Class.forName("com.ibm.security.tools.CertAndKeyGen");
+            }
             x500NameClass = Class.forName("com.ibm.security.x509.X500Name");
         } else {
             try {
