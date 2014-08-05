@@ -84,7 +84,8 @@ public class TestEmptyMatchRegExUserNameLoginTestCase extends AbstractIdpSslCert
           PrepareKeyAndTrustStoresServerSetupTask.GENERIC_PASSWORD_CHARS
         );
 
-        testSuccessfulOutput(httpClient, address, "Unexpected principal name.", PrepareKeyAndTrustStoresServerSetupTask.TRUSTED_CERT_NAME);
+        testSuccessfulOutput(httpClient, address, "Unexpected principal name.",
+                PrepareKeyAndTrustStoresServerSetupTask.TRUSTED_CERT_PATTERN);
     }
 
     /**
@@ -132,7 +133,9 @@ public class TestEmptyMatchRegExUserNameLoginTestCase extends AbstractIdpSslCert
                 .name("org.picketlink.identity.federation.bindings.jboss.auth.RegExUserNameLoginModule")
                 .flag(Constants.REQUIRED)
                 .putOption("password-stacking", "useFirstPass")
-                .putOption("regex", "CN=(?:[^\",]+|\"[^\"]*\"),")   // This is valid regex but not for RegExUserNameLoginModule - no group(1) in the regexp
+                                    .putOption("regex", "CN=(?:[^\",]+|\"[^\"]*\")(,|$)") // This is valid regex but not for
+                                                                                          // RegExUserNameLoginModule - no
+                                                                                          // group(1) in the regexp
                 .build(),
 
                 new SecurityModule.Builder()

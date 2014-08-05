@@ -82,7 +82,8 @@ public class TestIdpSslCertificateLoginTestCase extends AbstractIdpSslCertificat
           PrepareKeyAndTrustStoresServerSetupTask.GENERIC_PASSWORD_CHARS
         );
 
-        testSuccessfulOutput(httpClient, address, "Unexpected principal name.", PrepareKeyAndTrustStoresServerSetupTask.TRUSTED_CERT_NAME);
+        testSuccessfulOutput(httpClient, address, "Unexpected principal name.",
+                PrepareKeyAndTrustStoresServerSetupTask.TRUSTED_CERT_PATTERN);
     }
 
     /**

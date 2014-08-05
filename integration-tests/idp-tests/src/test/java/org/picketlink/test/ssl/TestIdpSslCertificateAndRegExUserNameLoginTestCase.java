@@ -84,7 +84,8 @@ public class TestIdpSslCertificateAndRegExUserNameLoginTestCase extends Abstract
         );
         
         //The name of principal coming from JAAS stack is same as SubjectDN from certificate
-        testSuccessfulOutput(httpClient, address, "Unexpected principal name.", PrepareKeyAndTrustStoresServerSetupTask.TRUSTED_CERT_NAME);
+        testSuccessfulOutput(httpClient, address, "Unexpected principal name.",
+                PrepareKeyAndTrustStoresServerSetupTask.TRUSTED_CERT_PATTERN);
     }
 
     /**
@@ -151,7 +152,7 @@ public class TestIdpSslCertificateAndRegExUserNameLoginTestCase extends Abstract
                 .name("org.picketlink.identity.federation.bindings.jboss.auth.RegExUserNameLoginModule")
                 .flag(Constants.REQUIRED)
                 .putOption("password-stacking", "useFirstPass")
-                .putOption("regex", "CN=([^\",]+|\"[^\"]*\"),")
+                                    .putOption("regex", "CN=([^\",]+|\"[^\"]*\")(,|$)")
                 .build(),
 
                 new SecurityModule.Builder()

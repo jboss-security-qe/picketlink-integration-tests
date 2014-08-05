@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.security.KeyStore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
+
 import org.apache.commons.io.FileUtils;
 import org.jboss.as.arquillian.api.ServerSetupTask;
 import org.jboss.as.arquillian.container.ManagementClient;
@@ -40,6 +42,7 @@ public class PrepareKeyAndTrustStoresServerSetupTask implements ServerSetupTask 
      * Common name part of the trusted client certificate.
      */
     public static final String COMMON_NAME_TRUSTED_CLIENT = "Java Duke <jduke@duke.java.org>";
+    public static final String COMMON_NAME_TRUSTED_CLIENT_SOLARIS_JDK18 = "Java Duke \\<jduke@duke.java.org\\>";
     private static final String COMMON_NAME_UNTRUSTED_CLIENT = "Hiding Duke <hduke@duke.java.org>";
     private static final String CERT_ORGANIZATION = "organization";
     private static final String CERT_ORGANIZATIONAL_UNIT = "orgUnit";
@@ -59,6 +62,16 @@ public class PrepareKeyAndTrustStoresServerSetupTask implements ServerSetupTask 
       + ", L=" + CERT_CITY
       + ", ST=" + CERT_STATE
       + ", C=" + CERT_COUNTRY;
+
+    /**
+     * Name presented to the server when the certificate of trusted client is used. Solaris with JDK 1.8 format.
+     */
+    public static final String TRUSTED_CERT_NAME_SOLARIS_JDK18 = "C=" + CERT_COUNTRY + ",ST=" + CERT_STATE + ",L=" + CERT_CITY
+            + ",O=" + CERT_ORGANIZATION + ",OU=" + CERT_ORGANIZATIONAL_UNIT + ",CN=" + COMMON_NAME_TRUSTED_CLIENT_SOLARIS_JDK18;
+
+    public static final Pattern TRUSTED_CERT_PATTERN = Pattern.compile("^("
+            + Pattern.quote(PrepareKeyAndTrustStoresServerSetupTask.TRUSTED_CERT_NAME) + "|"
+            + Pattern.quote(PrepareKeyAndTrustStoresServerSetupTask.TRUSTED_CERT_NAME_SOLARIS_JDK18) + ")");
 
     public static final String UNTRUSTED_CERT_NAME =
       "CN=\"" + COMMON_NAME_UNTRUSTED_CLIENT + "\""

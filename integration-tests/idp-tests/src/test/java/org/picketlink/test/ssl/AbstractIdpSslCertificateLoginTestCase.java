@@ -47,6 +47,8 @@ import org.apache.http.impl.conn.BasicClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.container.test.api.TargetsContainer;
@@ -148,17 +150,30 @@ public abstract class AbstractIdpSslCertificateLoginTestCase {
     }
 
     /**
-     * Accesses given SP address and authorizes via IdP using certificate already
-     * set in the {@code httpClient}.
+     * Accesses given SP address and authorizes via IdP using certificate already set in the {@code httpClient}.
      * 
      * @param httpClient HttpClient instance used to access the URI
      * @param address URI to get the document from
      * @param invalidOutputMessage Message to output if the document at URI does not match {@code expectedOutput}
      * @param expectedOutput Expected output
-     * @throws IOException 
+     * @throws IOException
      */
-    protected void testSuccessfulOutput(HttpClient httpClient, URI address,
-      String invalidOutputMessage, String expectedOutput) throws IOException {
+    protected void testSuccessfulOutput(HttpClient httpClient, URI address, String invalidOutputMessage, String expectedOutput)
+            throws IOException {
+        testSuccessfulOutput(httpClient, address, invalidOutputMessage, Pattern.compile(Pattern.quote(expectedOutput)));
+    }
+
+    /**
+     * Accesses given SP address and authorizes via IdP using certificate already set in the {@code httpClient}.
+     * 
+     * @param httpClient HttpClient instance used to access the URI
+     * @param address URI to get the document from
+     * @param invalidOutputMessage Message to output if the document at URI does not match {@code expectedOutput}
+     * @param expectedOutput Expected output pattern
+     * @throws IOException
+     */
+    protected void testSuccessfulOutput(HttpClient httpClient, URI address, String invalidOutputMessage,
+            Pattern expectedOutputPattern) throws IOException {
         assertThat(PREPARE_SSL_TASK, notNullValue());
 
         HttpGet get = new HttpGet(address);
@@ -192,7 +207,7 @@ public abstract class AbstractIdpSslCertificateLoginTestCase {
         response = httpClient.execute(get);
         responseBody = EntityUtils.toString(response.getEntity());
 
-        assertThat(invalidOutputMessage, responseBody, equalTo(expectedOutput));
+        assertThat(invalidOutputMessage, responseBody, RegexMatcher.matches(expectedOutputPattern));
     }
 
     /**
@@ -401,6 +416,26 @@ public abstract class AbstractIdpSslCertificateLoginTestCase {
             super.setup(managementClient, containerId);
 
             PREPARE_SSL_TASK = this;
+        }
+    }
+
+    public static class RegexMatcher extends BaseMatcher {
+        private final Pattern regex;
+
+        public RegexMatcher(Pattern regex) {
+            this.regex = regex;
+        }
+
+        public boolean matches(Object o) {
+            return regex.matcher((String) o).matches();
+        }
+
+        public void describeTo(Description description) {
+            description.appendText("matches regex=" + regex.pattern());
+        }
+
+        public static RegexMatcher matches(Pattern regex) {
+            return new RegexMatcher(regex);
         }
     }
 
