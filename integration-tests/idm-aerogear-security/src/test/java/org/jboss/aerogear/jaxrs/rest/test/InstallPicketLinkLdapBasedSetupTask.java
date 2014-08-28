@@ -1,22 +1,28 @@
 package org.jboss.aerogear.jaxrs.rest.test;
 
-import org.picketlink.test.integration.util.ModelUtil;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.ALLOW_RESOURCE_SERVICE_RESTART;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.OPERATION_HEADERS;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.ROLLBACK_ON_RUNTIME_FAILURE;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.SUBSYSTEM;
+
+import java.io.File;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.jboss.as.arquillian.api.ServerSetupTask;
 import org.jboss.as.arquillian.container.ManagementClient;
 import org.jboss.as.controller.PathAddress;
 import org.jboss.as.controller.PathElement;
 import org.jboss.dmr.ModelNode;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.*;
+import org.picketlink.test.integration.util.ModelUtil;
 
 // This class cannot be used in @ServerSetup annotation
 // until Arquillian and EAP are able to perform "reload"
 // command cleanly.
 // Seems to be related to https://bugzilla.redhat.com/show_bug.cgi?id=900065
 public class InstallPicketLinkLdapBasedSetupTask implements ServerSetupTask {
+
+    private static final String SYS_PROP_LDAP_WORKDIR = "ldap.workdir";
 
     private static final Logger log = Logger.getLogger(InstallPicketLinkLdapBasedSetupTask.class.getSimpleName());
 
@@ -27,12 +33,14 @@ public class InstallPicketLinkLdapBasedSetupTask implements ServerSetupTask {
     private LDAPTestUtil ldapUtil;
 
     private static final PathAddress PICKETLINK_LDAP = PathAddress.pathAddress(
-      PathElement.pathElement(SUBSYSTEM, "picketlink-identity-management"),
-      PathElement.pathElement("partition-manager", "picketlink-ldap")
-    );
-    private static final PathAddress PICKETLINK_LDAP_CONF = PICKETLINK_LDAP.append(PathElement.pathElement("identity-configuration", "picketlink-ldap-configuration"));
-    private static final PathAddress PICKETLINK_LDAP_CONF_STORE = PICKETLINK_LDAP_CONF.append(PathElement.pathElement("ldap-store", "ldap-store"));
-    private static final PathAddress PICKETLINK_LDAP_CONF_STORE_SUPPORTEDTYPES = PICKETLINK_LDAP_CONF_STORE.append(PathElement.pathElement("supported-types", "supported-types"));
+            PathElement.pathElement(SUBSYSTEM, "picketlink-identity-management"),
+            PathElement.pathElement("partition-manager", "picketlink-ldap"));
+    private static final PathAddress PICKETLINK_LDAP_CONF = PICKETLINK_LDAP.append(PathElement.pathElement(
+            "identity-configuration", "picketlink-ldap-configuration"));
+    private static final PathAddress PICKETLINK_LDAP_CONF_STORE = PICKETLINK_LDAP_CONF.append(PathElement.pathElement(
+            "ldap-store", "ldap-store"));
+    private static final PathAddress PICKETLINK_LDAP_CONF_STORE_SUPPORTEDTYPES = PICKETLINK_LDAP_CONF_STORE.append(PathElement
+            .pathElement("supported-types", "supported-types"));
 
     @Override
     public void setup(ManagementClient managementClient, String containerId) throws Exception {
@@ -54,13 +62,15 @@ public class InstallPicketLinkLdapBasedSetupTask implements ServerSetupTask {
         log.log(Level.INFO, "Starting LDAP instance");
 
         LDAPTestUtil res = new LDAPTestUtil(TEST_LDAP_SERVER_PORT);
-        res.setup();
+        File workDir = new File("target", "ldap-" + System.currentTimeMillis());
+        System.setProperty(SYS_PROP_LDAP_WORKDIR, workDir.getAbsolutePath());
+        res.setup(workDir);
         res.importLDIF("../../integration-tests/idm-aerogear-security/target/test-classes/users.ldif");
 
         log.log(Level.INFO, "Installing LDAP Based Partition Manager into AS/EAP container");
 
         ModelNode identityManagement = Util.createAddOperation(PICKETLINK_LDAP);
-//        identityManagement.get("alias").set("picketlink-ldap");
+        // identityManagement.get("alias").set("picketlink-ldap");
         identityManagement.get("jndi-name").set(JNDI_PICKETLINK_LDAP_BASED_PARTITION_MANAGER);
         allowServiceRestart(identityManagement);
 
@@ -89,7 +99,6 @@ public class InstallPicketLinkLdapBasedSetupTask implements ServerSetupTask {
 
         ModelNode agentMappingAttr = addLdapMappingAttr(org.picketlink.idm.model.basic.Agent.class, "loginName", "uid");
         agentMappingAttr.get("is-identifier").set(true);
-
 
         ModelNode userMapping = addLdapMapping(org.picketlink.idm.model.basic.User.class);
         userMapping.get("base-dn-suffix").set("ou=People,dc=jboss,dc=org");
@@ -124,18 +133,10 @@ public class InstallPicketLinkLdapBasedSetupTask implements ServerSetupTask {
         grantMapping.get("relates-to").set("org.picketlink.idm.model.basic.Role");
         allowServiceRestart(grantMapping);
 
-        ModelNode op = ModelUtil.createCompositeNode(
-          identityManagement,
-          identityConfiguration,
-          ldapStore,
-          supportedTypes,
-          identityType, relationshipType,
-          agentMapping, agentMappingAttr,
-          userMapping, userMappingAttr1, userMappingAttr2, userMappingAttr3, userMappingAttr4,
-          roleMapping, roleMappingAttr,
-          groupMapping, groupMappingAttr,
-          grantMapping, grantMappingAttr
-        );
+        ModelNode op = ModelUtil.createCompositeNode(identityManagement, identityConfiguration, ldapStore, supportedTypes,
+                identityType, relationshipType, agentMapping, agentMappingAttr, userMapping, userMappingAttr1,
+                userMappingAttr2, userMappingAttr3, userMappingAttr4, roleMapping, roleMappingAttr, groupMapping,
+                groupMappingAttr, grantMapping, grantMappingAttr);
 
         // add picketlink subsystem
         boolean success = ModelUtil.execute(managementClient, op);
@@ -158,9 +159,8 @@ public class InstallPicketLinkLdapBasedSetupTask implements ServerSetupTask {
     private static ModelNode addLdapMappingAttr(Class<?> clazz, String modelAttrName, String ldapAttrName) {
         String className = clazz.getName();
 
-        PathAddress address = PICKETLINK_LDAP_CONF_STORE
-          .append(PathElement.pathElement("mapping", className))
-          .append(PathElement.pathElement("attribute", modelAttrName));
+        PathAddress address = PICKETLINK_LDAP_CONF_STORE.append(PathElement.pathElement("mapping", className)).append(
+                PathElement.pathElement("attribute", modelAttrName));
         ModelNode node = Util.createAddOperation(address);
 
         node.get("name").set(modelAttrName);
@@ -171,7 +171,8 @@ public class InstallPicketLinkLdapBasedSetupTask implements ServerSetupTask {
 
     private static ModelNode addLdapSupportedType(Class<?> clazz) {
         String className = clazz.getName();
-        PathAddress address = PICKETLINK_LDAP_CONF_STORE_SUPPORTEDTYPES.append(PathElement.pathElement("supported-type", className));
+        PathAddress address = PICKETLINK_LDAP_CONF_STORE_SUPPORTEDTYPES.append(PathElement.pathElement("supported-type",
+                className));
 
         ModelNode node = Util.createAddOperation(address);
         node.get("class-name").set(className);
@@ -181,7 +182,8 @@ public class InstallPicketLinkLdapBasedSetupTask implements ServerSetupTask {
     public static void staticTearDown(ManagementClient managementClient, LDAPTestUtil ldapUtil) throws Exception {
         log.log(Level.INFO, "Stopping LDAP instance");
 
-        ldapUtil.tearDown();
+        final File workDir = new File(System.getProperty(SYS_PROP_LDAP_WORKDIR));
+        ldapUtil.tearDown(workDir);
 
         log.log(Level.INFO, "Deinstalling LDAP Based Partition Manager from AS/EAP container");
 

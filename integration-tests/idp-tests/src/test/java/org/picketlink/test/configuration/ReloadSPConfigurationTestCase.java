@@ -55,9 +55,9 @@ import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
 
 /**
- * Test case for custom user-defined configuration file for Service Provider(SP).  Configuration file can be
- * referenced from jboss-web.xml as valve parameter configFile with timeIterval to reload. Then instead of classic 
- * picketlink.xml, referenced configuration file will be used and periodically reloaded in defined time interval.
+ * Test case for custom user-defined configuration file for Service Provider(SP). Configuration file can be referenced from
+ * jboss-web.xml as valve parameter configFile with timeIterval to reload. Then instead of classic picketlink.xml, referenced
+ * configuration file will be used and periodically reloaded in defined time interval.
  * 
  * @author Filip Bogyai
  */
@@ -71,7 +71,7 @@ public class ReloadSPConfigurationTestCase extends AbstractExternalConfiguration
     private static final long WAIT_INTERVAL = 2000;
 
     @Test
-    @InSequence(1)
+    @InSequence(10)
     public void testCorrectExternalConfiguration() throws Exception {
 
         System.out.println("Trying " + getSalesURL());
@@ -99,18 +99,18 @@ public class ReloadSPConfigurationTestCase extends AbstractExternalConfiguration
     }
 
     @Test
-    @InSequence(2)
+    @InSequence(20)
     public void changeSalesExternalConfiguration() throws IOException, InterruptedException {
 
         String content = FileUtils.fileRead(configFileSales);
         // Change ValidatingAlias values for Sales app
-        String changedContent = content.replaceAll(getServerAddress(), "example.com");  
+        String changedContent = content.replaceAll(getServerAddress(), "example.com");
         FileUtils.fileWrite(configFileSales.getAbsolutePath(), changedContent);
         Thread.sleep(WAIT_INTERVAL);
     }
 
     @Test
-    @InSequence(3)
+    @InSequence(30)
     public void testWrongSalesExternalConfiguration() throws IOException, SAXException {
 
         System.out.println("Trying " + getEmployeeURL());
@@ -137,25 +137,25 @@ public class ReloadSPConfigurationTestCase extends AbstractExternalConfiguration
 
         webConversation.clearContents();
     }
-      
+
     @Test
-    @InSequence(3)
+    @InSequence(40)
     public void changeEmployeeExternalConfiguration() throws IOException, InterruptedException {
 
         String content = FileUtils.fileRead(configFileSales);
         // Change back ValidatingAlias values for Sales Application
-        String changedContent = content.replaceAll("example.com", getServerAddress());  
+        String changedContent = content.replaceAll("example.com", getServerAddress());
         FileUtils.fileWrite(configFileSales.getAbsolutePath(), changedContent);
 
         content = FileUtils.fileRead(configFileEmployee);
         // Change ValidatingAlias values for Employee Application
-        changedContent = content.replaceAll(getServerAddress(), "example.com");  
+        changedContent = content.replaceAll(getServerAddress(), "example.com");
         FileUtils.fileWrite(configFileEmployee.getAbsolutePath(), changedContent);
         Thread.sleep(WAIT_INTERVAL);
     }
-    
+
     @Test
-    @InSequence(4)
+    @InSequence(50)
     public void testWrongEmployeeExternalConfiguration() throws IOException, InterruptedException, SAXException {
 
         System.out.println("Trying " + getSalesURL());
@@ -173,7 +173,7 @@ public class ReloadSPConfigurationTestCase extends AbstractExternalConfiguration
         // Check Sales Application
         webResponse = webConversation.getCurrentPage();
         assertThat(" Not reached the sales index page ", webResponse.getText(), containsString("SalesTool"));
-        
+
         // Check Employee Application
         System.out.println("Trying " + getEmployeeURL());
         webResponse = webConversation.getResponse(getEmployeeURL());
@@ -191,7 +191,7 @@ public class ReloadSPConfigurationTestCase extends AbstractExternalConfiguration
         addTrustedDomain(idp, getServerAddress());
         addValidatingAlias(idp, getServerAddress(), getServerAddress());
         addKeyStoreAlias(idp, getServerAddress());
-        
+
         return idp;
     }
 
@@ -213,8 +213,8 @@ public class ReloadSPConfigurationTestCase extends AbstractExternalConfiguration
 
     @Deployment(name = "employee-sig", testable = false)
     @TargetsContainer("jboss")
-    public static WebArchive createEmployeeSigDeployment() throws KeyStoreException, FileNotFoundException, NoSuchAlgorithmException,
-            CertificateException, GeneralSecurityException, IOException {
+    public static WebArchive createEmployeeSigDeployment() throws KeyStoreException, FileNotFoundException,
+            NoSuchAlgorithmException, CertificateException, GeneralSecurityException, IOException {
         WebArchive sp = MavenArtifactUtil.getQuickstartsMavenArchive("employee-sig");
 
         addValidatingAlias(sp, getServerAddress(), getServerAddress());

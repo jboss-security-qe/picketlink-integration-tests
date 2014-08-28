@@ -1,13 +1,18 @@
 package org.jboss.aerogear.jaxrs.rest.test;
 
-import java.io.File;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.ALLOW_RESOURCE_SERVICE_RESTART;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.EXTENSION;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.OPERATION_HEADERS;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.ROLLBACK_ON_RUNTIME_FAILURE;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.SUBSYSTEM;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.jboss.as.arquillian.api.ServerSetupTask;
 import org.jboss.as.arquillian.container.ManagementClient;
 import org.jboss.as.controller.PathAddress;
 import org.jboss.as.controller.PathElement;
-import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.*;
 import org.jboss.dmr.ModelNode;
 import org.picketlink.test.integration.util.ModelUtil;
 
@@ -19,13 +24,11 @@ public class InstallPicketLinkExtensionSetupTask implements ServerSetupTask {
 
     private static final Logger LOG = Logger.getLogger(InstallPicketLinkExtensionSetupTask.class.getName());
 
-    private static final PathAddress PICKETLINK_EXTENSION = PathAddress.pathAddress(
-      PathElement.pathElement(EXTENSION, "org.wildfly.extension.picketlink")
-    );
+    private static final PathAddress PICKETLINK_EXTENSION = PathAddress.pathAddress(PathElement.pathElement(EXTENSION,
+            "org.wildfly.extension.picketlink"));
 
-    private static final PathAddress PICKETLINK_IDENTITY_MANAGEMENT = PathAddress.pathAddress(
-      PathElement.pathElement(SUBSYSTEM, "picketlink-identity-management")
-    );
+    private static final PathAddress PICKETLINK_IDENTITY_MANAGEMENT = PathAddress.pathAddress(PathElement.pathElement(
+            SUBSYSTEM, "picketlink-identity-management"));
 
     @Override
     public void setup(ManagementClient managementClient, String containerId) throws Exception {
@@ -44,18 +47,9 @@ public class InstallPicketLinkExtensionSetupTask implements ServerSetupTask {
     }
 
     public static void staticSetup(ManagementClient managementClient) throws Exception {
-        File workingDir = File.createTempFile("pl-idm-aerogear-security", "workingdir");
-        workingDir.delete();
-        if (workingDir.mkdirs()) {
-            workingDir.deleteOnExit();
-        } else {
-            throw new AssertionError("Spoofing malicious security operation");
-        }
-
         LOG.log(Level.INFO, "Installing PicketLink extension into AS/EAP container.");
 
         ModelNode step1 = Util.createAddOperation(PICKETLINK_EXTENSION);
-//        step1.get("alias").set("picketlink-files");
         allowServiceRestart(step1);
 
         boolean success = ModelUtil.execute(managementClient, step1);
@@ -87,7 +81,7 @@ public class InstallPicketLinkExtensionSetupTask implements ServerSetupTask {
                 new Object[] { success ? "passed" : "failed" });
     }
 
-//*
+    // *
     private static void allowServiceRestart(ModelNode... ops) {
         for (ModelNode op : ops) {
             if (op != null) {
@@ -97,5 +91,5 @@ public class InstallPicketLinkExtensionSetupTask implements ServerSetupTask {
             }
         }
     }
-//*/
+    // */
 }

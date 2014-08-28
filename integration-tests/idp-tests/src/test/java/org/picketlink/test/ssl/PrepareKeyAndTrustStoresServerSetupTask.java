@@ -6,7 +6,8 @@
 
 package org.picketlink.test.ssl;
 
-import org.picketlink.test.integration.util.CertUtils;
+import static org.picketlink.test.integration.util.TestUtil.getServerAddress;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -18,14 +19,13 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
 import org.jboss.as.arquillian.api.ServerSetupTask;
 import org.jboss.as.arquillian.container.ManagementClient;
-import static org.picketlink.test.integration.util.TestUtil.getServerAddress;
+import org.picketlink.test.integration.util.CertUtils;
 
 /**
- * Prepares client and server key/trust stores. 
- * The following will be prepared:
+ * Prepares client and server key/trust stores. The following will be prepared:
  * <ul>
- * <li>Client key store containing two keys with aliases {@link #TRUSTED_CLIENT_KEY_ALIAS}
- *     and {@link #UNTRUSTED_CLIENT_KEY_ALIAS}</li>
+ * <li>Client key store containing two keys with aliases {@link #TRUSTED_CLIENT_KEY_ALIAS} and
+ * {@link #UNTRUSTED_CLIENT_KEY_ALIAS}</li>
  * <li>Client trust store containing server certificate with alias {@link #SERVER_KEY_ALIAS}</li>
  * <li>Server key store containing one key with alias {@link #SERVER_KEY_ALIAS}</li>
  * <li>Server trust store containing one certificat with alias {@link #TRUSTED_CLIENT_KEY_ALIAS}</li>
@@ -55,13 +55,9 @@ public class PrepareKeyAndTrustStoresServerSetupTask implements ServerSetupTask 
     /**
      * Name presented to the server when the certificate of trusted client is used.
      */
-    public static final String TRUSTED_CERT_NAME =
-      "CN=\"" + COMMON_NAME_TRUSTED_CLIENT + "\""
-      + ", OU=" + CERT_ORGANIZATIONAL_UNIT
-      + ", O=" + CERT_ORGANIZATION
-      + ", L=" + CERT_CITY
-      + ", ST=" + CERT_STATE
-      + ", C=" + CERT_COUNTRY;
+    public static final String TRUSTED_CERT_NAME = "CN=\"" + COMMON_NAME_TRUSTED_CLIENT + "\"" + ", OU="
+            + CERT_ORGANIZATIONAL_UNIT + ", O=" + CERT_ORGANIZATION + ", L=" + CERT_CITY + ", ST=" + CERT_STATE + ", C="
+            + CERT_COUNTRY;
 
     /**
      * Name presented to the server when the certificate of trusted client is used. Solaris with JDK 1.8 format.
@@ -73,13 +69,9 @@ public class PrepareKeyAndTrustStoresServerSetupTask implements ServerSetupTask 
             + Pattern.quote(PrepareKeyAndTrustStoresServerSetupTask.TRUSTED_CERT_NAME) + "|"
             + Pattern.quote(PrepareKeyAndTrustStoresServerSetupTask.TRUSTED_CERT_NAME_SOLARIS_JDK18) + ")");
 
-    public static final String UNTRUSTED_CERT_NAME =
-      "CN=\"" + COMMON_NAME_UNTRUSTED_CLIENT + "\""
-      + ", OU=" + CERT_ORGANIZATIONAL_UNIT
-      + ", O=" + CERT_ORGANIZATION
-      + ", L=" + CERT_CITY
-      + ", ST=" + CERT_STATE
-      + ", C=" + CERT_COUNTRY;
+    public static final String UNTRUSTED_CERT_NAME = "CN=\"" + COMMON_NAME_UNTRUSTED_CLIENT + "\"" + ", OU="
+            + CERT_ORGANIZATIONAL_UNIT + ", O=" + CERT_ORGANIZATION + ", L=" + CERT_CITY + ", ST=" + CERT_STATE + ", C="
+            + CERT_COUNTRY;
 
     /**
      * Alias of the server certificate.
@@ -136,44 +128,28 @@ public class PrepareKeyAndTrustStoresServerSetupTask implements ServerSetupTask 
     }
 
     private static void staticTearDown(File workDir) throws IOException {
-        FileUtils.deleteDirectory(workDir);
+        FileUtils.deleteQuietly(workDir);
     }
-
 
     @Override
     public void setup(ManagementClient managementClient, String containerId) throws Exception {
-        workDir = File.createTempFile("sslConnector", "dir", new File("."));
+        workDir = File.createTempFile("sslConnector", "dir", new File("target"));
         workDir.delete();
         workDir.mkdirs();
 
         LOG.log(Level.FINE, "Work dir: {0}", workDir.getAbsolutePath());
 
         serverKeyStore = CertUtils.createKeyStore();
-        CertUtils.generateSelfSignedCertificate(
-          serverKeyStore,
-          getServerAddress(),
-          CERT_ORGANIZATIONAL_UNIT, CERT_ORGANIZATION, CERT_CITY, CERT_STATE, CERT_COUNTRY,
-          SERVER_KEY_ALIAS,
-          GENERIC_PASSWORD_CHARS
-        );
+        CertUtils.generateSelfSignedCertificate(serverKeyStore, getServerAddress(), CERT_ORGANIZATIONAL_UNIT,
+                CERT_ORGANIZATION, CERT_CITY, CERT_STATE, CERT_COUNTRY, SERVER_KEY_ALIAS, GENERIC_PASSWORD_CHARS);
         serverKeyStore.store(new FileOutputStream(getServerKeystoreFile()), GENERIC_PASSWORD_CHARS);
 
         clientKeyStore = CertUtils.createKeyStore();
-        CertUtils.generateSelfSignedCertificate(
-          clientKeyStore,
-          COMMON_NAME_TRUSTED_CLIENT,
-          CERT_ORGANIZATIONAL_UNIT, CERT_ORGANIZATION, CERT_CITY, CERT_STATE, CERT_COUNTRY,
-          TRUSTED_CLIENT_KEY_ALIAS,
-          GENERIC_PASSWORD_CHARS
-        );
-        CertUtils.generateSelfSignedCertificate(
-          clientKeyStore,
-          COMMON_NAME_TRUSTED_CLIENT,
-          CERT_ORGANIZATIONAL_UNIT, CERT_ORGANIZATION, CERT_CITY, CERT_STATE, CERT_COUNTRY,
-          UNTRUSTED_CLIENT_KEY_ALIAS,
-          GENERIC_PASSWORD_CHARS
-        );
-        
+        CertUtils.generateSelfSignedCertificate(clientKeyStore, COMMON_NAME_TRUSTED_CLIENT, CERT_ORGANIZATIONAL_UNIT,
+                CERT_ORGANIZATION, CERT_CITY, CERT_STATE, CERT_COUNTRY, TRUSTED_CLIENT_KEY_ALIAS, GENERIC_PASSWORD_CHARS);
+        CertUtils.generateSelfSignedCertificate(clientKeyStore, COMMON_NAME_TRUSTED_CLIENT, CERT_ORGANIZATIONAL_UNIT,
+                CERT_ORGANIZATION, CERT_CITY, CERT_STATE, CERT_COUNTRY, UNTRUSTED_CLIENT_KEY_ALIAS, GENERIC_PASSWORD_CHARS);
+
         clientKeyStore.store(new FileOutputStream(getClientKeystoreFile()), GENERIC_PASSWORD_CHARS);
 
         serverTrustStore = CertUtils.generateTrustStoreWithImportedCertificate(clientKeyStore, TRUSTED_CLIENT_KEY_ALIAS);
