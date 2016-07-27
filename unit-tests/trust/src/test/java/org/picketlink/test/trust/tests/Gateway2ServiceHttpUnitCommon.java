@@ -38,14 +38,15 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.util.EntityUtils;
 import org.jboss.logging.Logger;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.picketlink.test.trust.servlet.ServiceServlet;
 
 /**
- * Unit test to test scenario with JBWSTokenIssuingLoginModule as gateway which obtains SAML token 
+ * Unit test to test scenario with JBWSTokenIssuingLoginModule as gateway which obtains SAML token
  * and stores it in to the JAAS subject. It is later picked by GatewayServlet app and passed
  * in http request as header to another app (service) which will use SAML2STSLoginModule to get
- * the SAML token and locally validate it and grant access to the service app. 
+ * the SAML token and locally validate it and grant access to the service app.
  *
  * @author Peter Skopek: pskopek at redhat dot com
  * @since Aug 29, 2012
@@ -56,6 +57,7 @@ public abstract class Gateway2ServiceHttpUnitCommon extends TrustTestsBase {
     protected static final Logger log = Logger.getLogger(Gateway2ServiceHttpUnitCommon.class);
 
     @Test
+    @Ignore("Failed with \"[Fatal Error] :1:1: Content is not allowed in prolog.\". It is fixed since EAP 6.2.0")
     public void testG2S_http_compressedTokenScenario() throws Exception {
         String encodedURL = java.net.URLEncoder.encode(getTargetURL("/service/incoming"), "UTF-8");
         log.debug("encoded target URL="+encodedURL);
@@ -69,16 +71,16 @@ public abstract class Gateway2ServiceHttpUnitCommon extends TrustTestsBase {
 
     private void assertGatewayApp(String appUri, String userName, String password)
             throws Exception {
-        
+
         String content = getContentFromApp(appUri, userName, password);
 
         assertTrue("Request not authenticated.", content.indexOf("GatewayAuthentication=Success") > -1);
 
         boolean samlCredPresentOnSubject = samlCredentialPresense(content);
         assertTrue("SamlCredential on subject is missing for (" + appUri + ")", samlCredPresentOnSubject);
-        
+
     }
-    
+
     private void assertServiceApp(String appUri, String userName, String password) throws Exception {
 
         String content = getContentFromApp(appUri, userName, password);
@@ -98,18 +100,18 @@ public abstract class Gateway2ServiceHttpUnitCommon extends TrustTestsBase {
         Matcher m = p.matcher(content);
         return m.find();
     }
-    
+
     private String getContentFromApp(String appUri, String userName, String password)
             throws Exception {
         DefaultHttpClient httpclient = new DefaultHttpClient();
 
         String content = null;
-        
+
         try {
             httpclient.getCredentialsProvider().setCredentials(new AuthScope(getServerAddress(), 8080), // localhost
                     new UsernamePasswordCredentials(userName, password));
 
-            HttpGet httpget = new HttpGet(getTargetURL(appUri)); 
+            HttpGet httpget = new HttpGet(getTargetURL(appUri));
 
             log.debug("executing request:" + httpget.getRequestLine());
             HttpResponse response = httpclient.execute(httpget);
@@ -133,7 +135,7 @@ public abstract class Gateway2ServiceHttpUnitCommon extends TrustTestsBase {
         }
 
         return content;
-        
+
     }
 
 
