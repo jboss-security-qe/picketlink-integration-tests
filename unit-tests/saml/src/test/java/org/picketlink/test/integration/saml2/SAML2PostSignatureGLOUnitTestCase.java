@@ -2,7 +2,7 @@
  * JBoss, Home of Professional Open Source.
  * Copyright 2011, Red Hat Middleware LLC, and individual contributors
  * as indicated by the @author tags. See the copyright.txt file in the
- * distribution for a full listing of individual contributors. 
+ * distribution for a full listing of individual contributors.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as
@@ -48,15 +48,17 @@ import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebForm;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
+import org.junit.Ignore;
 
 /**
  * Unit test the GLO scenarios involving two endpoints with SAML2 Post and Signature binding
- * 
+ *
  * @author anil saldhana
  */
-@TargetContainers ({"jbas5", "jbas6", "jbas7", "tomcat6", "eap5"})
+@TargetContainers({"jbas5", "jbas6", "jbas7", "tomcat6", "eap5"})
+@Ignore("https://bugzilla.redhat.com/show_bug.cgi?id=901024 - it works since EAP 6.1.1")
 public class SAML2PostSignatureGLOUnitTestCase extends AbstractSAMLIntegrationTests {
-    
+
     @Test
     public void testSAMLPostBindingGlobalLogOut() throws Exception {
         System.out.println("Trying " + getSalesURL());
@@ -100,42 +102,42 @@ public class SAML2PostSignatureGLOUnitTestCase extends AbstractSAMLIntegrationTe
     protected String getEmployeeURL() {
         return getTargetURL("/employee-sig/");
     }
-    
+
     protected String getSalesURL() {
         return getTargetURL("/sales-post-sig/");
     }
-    
+
     @Deployment(name = "idp-sig", testable = false)
     @TargetsContainer("jboss")
     public static WebArchive createIDPSigDeployment() throws GeneralSecurityException, IOException {
         WebArchive idp = MavenArtifactUtil.getQuickstartsMavenArchive("idp-sig");
-        
+
         addTrustedDomain(idp, getServerAddress());
         addValidatingAlias(idp, getServerAddress(), getServerAddress());
         addKeyStoreAlias(idp, getServerAddress());
-        
+
         return idp;
     }
-    
+
     @Deployment(name = "sales-post-sig", testable = false)
     @TargetsContainer("jboss")
     public static WebArchive createSalesPostSigDeployment() throws GeneralSecurityException, IOException {
         WebArchive sp = MavenArtifactUtil.getQuickstartsMavenArchive("sales-post-sig");
-        
+
         addValidatingAlias(sp, getServerAddress(), getServerAddress());
         addKeyStoreAlias(sp, getServerAddress());
-        
+
         return sp;
     }
-    
+
     @Deployment(name = "employee-sig", testable = false)
     @TargetsContainer("jboss")
     public static WebArchive createEmployeeSigDeployment() throws KeyStoreException, FileNotFoundException, NoSuchAlgorithmException, CertificateException, GeneralSecurityException, IOException {
         WebArchive sp = MavenArtifactUtil.getQuickstartsMavenArchive("employee-sig");
-        
+
         addValidatingAlias(sp, getServerAddress(), getServerAddress());
         addKeyStoreAlias(sp, getServerAddress());
-        
+
         return sp;
     }
 }

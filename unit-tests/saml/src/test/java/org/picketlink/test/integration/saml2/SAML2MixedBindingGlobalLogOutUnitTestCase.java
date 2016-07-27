@@ -2,7 +2,7 @@
  * JBoss, Home of Professional Open Source.
  * Copyright 2008, Red Hat Middleware LLC, and individual contributors
  * as indicated by the @author tags. See the copyright.txt file in the
- * distribution for a full listing of individual contributors. 
+ * distribution for a full listing of individual contributors.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as
@@ -26,7 +26,6 @@ import static org.picketlink.test.integration.util.PicketLinkConfigurationUtil.a
 import static org.picketlink.test.integration.util.TestUtil.getServerAddress;
 
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.container.test.api.TargetsContainer;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
@@ -42,6 +41,7 @@ import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebForm;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
+import org.junit.Ignore;
 
 /**
  * <p>
@@ -51,11 +51,12 @@ import com.meterware.httpunit.WebResponse;
  * <b>Note:</b> This test expects that a set of endpoints that are configured for the test are available. You may have to start
  * web containers offline for the endpoints to be live.
  * </p>
- * 
+ *
  * @author Anil.Saldhana@redhat.com
  * @since Apr 8, 2010
  */
-@TargetContainers ({"jbas5", "jbas6", "jbas7", "tomcat6", "eap5"})
+@TargetContainers({"jbas5", "jbas6", "jbas7", "tomcat6", "eap5"})
+@Ignore("https://bugzilla.redhat.com/show_bug.cgi?id=901024 - it works since EAP 6.1.1")
 public class SAML2MixedBindingGlobalLogOutUnitTestCase extends AbstractSAMLIntegrationTests {
 
     @Test
@@ -71,7 +72,7 @@ public class SAML2MixedBindingGlobalLogOutUnitTestCase extends AbstractSAMLInteg
         WebConversation webConversation = new WebConversation();
 
         WebResponse webResponse = webConversation.getResponse(serviceRequest1);
-        
+
         WebForm loginForm = webResponse.getForms()[0];
         loginForm.setParameter("j_username", "tomcat");
         loginForm.setParameter("j_password", "tomcat");
@@ -79,7 +80,7 @@ public class SAML2MixedBindingGlobalLogOutUnitTestCase extends AbstractSAMLInteg
         submitButton.click();
 
         webResponse = webConversation.getCurrentPage();
-        
+
         assertTrue(" Reached the sales index page ", webResponse.getText().contains("SalesTool"));
 
         // Employee post Application Login
@@ -125,12 +126,12 @@ public class SAML2MixedBindingGlobalLogOutUnitTestCase extends AbstractSAMLInteg
     public static WebArchive createIDPDeployment() throws ConfigurationException, ProcessingException, ParsingException,
             InterruptedException {
         WebArchive idp = MavenArtifactUtil.getQuickstartsMavenArchive("idp");
-        
+
         addTrustedDomain(idp, getServerAddress());
-        
+
         return idp;
     }
-    
+
     @Deployment(name = "sales-post", testable = false)
     @TargetsContainer("jboss")
     public static WebArchive createSalesPostDeployment() {
